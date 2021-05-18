@@ -9,9 +9,9 @@ const players_utils = require("./utils/players_utils");
  */
 router.use(async function (req, res, next) {
   if (req.session && req.session.user_id) {
-    DButils.execQuery("SELECT user_id FROM users_tirgul")
+    DButils.execQuery("SELECT userId FROM dbo.users")
       .then((users) => {
-        if (users.find((x) => x.user_id === req.session.user_id)) {
+        if (users.find((x) => x.userId === req.session.user_id)) {
           req.user_id = req.session.user_id;
           next();
         }
@@ -45,7 +45,7 @@ router.get("/favoritePlayers", async (req, res, next) => {
     let favorite_players = {};
     const player_ids = await users_utils.getFavoritePlayers(user_id);
     let player_ids_array = [];
-    player_ids.map((element) => player_ids_array.push(element.player_id)); //extracting the players ids into array
+    player_ids.map((element) => player_ids_array.push(element.playerId)); //extracting the players ids into array
     const results = await players_utils.getPlayersInfo(player_ids_array);
     res.status(200).send(results);
   } catch (error) {
