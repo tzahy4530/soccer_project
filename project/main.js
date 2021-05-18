@@ -18,7 +18,7 @@ app.use(
   session({
     cookieName: "session", // the cookie key name
     secret: process.env.COOKIE_SECRET, // the encryption key
-    duration: 24 * 60 * 60 * 1000, // expired after 20 sec
+    duration: 60 * 60 * 1000, // expired after 20 sec
     activeDuration: 1000 * 60 * 5, // if expiresIn < activeDuration,
     cookie: {
       httpOnly: false,
@@ -94,3 +94,5 @@ const server = app.listen(port, () => {
 //     server.close(() => console.log("server closed"));
 //   }
 // });
+
+
