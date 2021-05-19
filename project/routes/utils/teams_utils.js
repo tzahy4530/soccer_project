@@ -1,8 +1,8 @@
 const axios = require("axios");
-const api_domain = "https://soccer.sportmonks.com/api/v2.0";
+const api_domain = process.env.api_domain;
 
 
-async function getTeamsInfo(teams_ids_list){
+async function getTeamsInfoById(teams_ids_list){
     let promises = [];
     teams_ids_list.map((id) =>
       promises.push(
@@ -17,38 +17,68 @@ async function getTeamsInfo(teams_ids_list){
     return extractRelevantTeamsData(teams_info);
   }
 
-async function getTeamInfo(team_id){
+async function getTeamInfoById(team_id){
   const team_info = await axios.get(`${api_domain}/teams/${team_id}`, {
     params: {
       api_token: process.env.api_token,
     },
   })
-  return extractRelevantTeamData(team_info)
+  return extractRelevantTeamData(team_info.data.data)
 }
+
+async function getTeamInfoByName(team_name){
+  const team_info = await axios.get(`${api_domain}/teams/search/${team_name}`, {
+    params: {
+      api_token: process.env.api_token,
+    },
+  })
+  return extractRelevantTeamData(team_info.data.data[0])
+}
+
+async function getAllTeamsInfoBySeassonId(seasson_id){
+  const all_teams = await axios.get(`${api_domain}/teams/season/${seasson_id}`, {
+    params: {
+      api_token: process.env.api_token,
+    },
+  })
+return extractRelevantTeamsData(all_teams);
+
+}
+
 
 function extractRelevantTeamData(team_info) {
     //const { fullname, image_path, position_id } = player_info.data.data;
-    const {name, id, logo_path, short_code, coach}=team_info.data.data;
+    const {name, id, logo_path, short_code}=team_info;
     return {
+      id: id,
       name: name,
       logo: logo_path,
-      id: id,
       short_code: short_code,
     };
 }
 
+
 function extractRelevantTeamsData(teams_info) {
+  try{
     return teams_info.map((team_info) => {
       //const { fullname, image_path, position_id } = player_info.data.data;
-      const {name, id, logo_path, short_code, coach}=team_info.data.data;
-      return {
-        name: name,
-        logo: logo_path,
-        id: id,
-        short_code: short_code,
-      };
+      return extractRelevantTeamData(team_info.data.data)
     });
+  } catch(err){
+      try{
+      return teams_info.data.data.map((team_info) => {
+        //const { fullname, image_path, position_id } = player_info.data.data;
+        return extractRelevantTeamData(team_info)
+      });
+   } catch(err){
+       throw err
   }
+  } 
 
-  exports.getTeamsInfo=getTeamsInfo;
-  exports.getTeamInfo=getTeamInfo;
+}
+
+
+  exports.getTeamsInfoById=getTeamsInfoById;
+  exports.getTeamInfoById=getTeamInfoById;
+  exports.getTeamInfoByName=getTeamInfoByName;
+  exports.getAllTeamsInfoBySeassonId=getAllTeamsInfoBySeassonId;

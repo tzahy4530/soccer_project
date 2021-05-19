@@ -78,7 +78,7 @@ router.get("/favoriteTeams", async (req, res, next) => {
     const team_ids = await users_utils.getFavoriteTeams(user_id);
     let team_ids_array = [];
     team_ids.map((element) => team_ids_array.push(element.teamId)); //extracting the teams ids into array
-    const results = await teams_utils.getTeamsInfo(team_ids_array);
+    const results = await teams_utils.getTeamsInfoById(team_ids_array);
     res.status(200).send(results);
   } catch (error) {
     next(error);
