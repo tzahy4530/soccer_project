@@ -4,6 +4,7 @@ const DButils = require("./utils/DButils");
 const users_utils = require("./utils/users_utils");
 const players_utils = require("./utils/players_utils");
 const teams_utils = require("./utils/teams_utils");
+const matches_utils = require("./utils/matches_utils");
 
 /**
  * Authenticate all incoming requests by middleware
@@ -43,7 +44,6 @@ router.post("/favoritePlayers", async (req, res, next) => {
 router.get("/favoritePlayers", async (req, res, next) => {
   try {
     const user_id = req.session.user_id;
-    let favorite_players = {};
     const player_ids = await users_utils.getFavoritePlayers(user_id);
     let player_ids_array = [];
     player_ids.map((element) => player_ids_array.push(element.playerId)); //extracting the players ids into array
@@ -75,7 +75,6 @@ router.get("/favoritePlayers", async (req, res, next) => {
 router.get("/favoriteTeams", async (req, res, next) => {
   try {
     const user_id = req.session.user_id;
-    let favorite_teams = {};
     const team_ids = await users_utils.getFavoriteTeams(user_id);
     let team_ids_array = [];
     team_ids.map((element) => team_ids_array.push(element.teamId)); //extracting the teams ids into array
@@ -106,11 +105,10 @@ router.get("/favoriteTeams", async (req, res, next) => {
 router.get("/favoriteMatches", async (req, res, next) => {
   try {
     const user_id = req.session.user_id;
-    let favorite_matches = {};
     const match_ids = await users_utils.getFavoriteMatches(user_id);
     let match_ids_array = [];
-    match_ids.map((element) => team_ids_array.push(element.matchId)); //extracting the players ids into array
-    const results = await players_utils.getTeamsInfo(match_ids_array);
+    match_ids.map((element) => match_ids_array.push(element.matchId)); //extracting the players ids into array
+    const results = await matches_utils.getMatchesInfo(match_ids_array);
     res.status(200).send(results);
   } catch (error) {
     next(error);

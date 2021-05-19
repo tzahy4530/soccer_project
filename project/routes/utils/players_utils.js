@@ -1,6 +1,5 @@
 const axios = require("axios");
 const api_domain = "https://soccer.sportmonks.com/api/v2.0";
-// const TEAM_ID = "85";
 
 async function getPlayerIdsByTeam(team_id) {
   let player_ids_list = [];
@@ -35,21 +34,29 @@ async function getPlayersInfo(players_ids_list) {
 
 function extractRelevantPlayerData(players_info) {
   return players_info.map((player_info) => {
-    const { fullname, image_path, position_id } = player_info.data.data;
+    const {player_id, fullname, image_path, position_id,
+       common_name, nationality, birthdate, birthcountry, height, weight} = player_info.data.data;
     const { name } = player_info.data.data.team.data;
     return {
+      id: player_id,
       name: fullname,
-      image: image_path,
+      common_name: common_name,
       position: position_id,
       team_name: name,
+      nationality: nationality,
+      birthdate: birthdate,
+      birthcountry: birthcountry,
+      height: height,
+      weight: weight,
+      image: image_path,
     };
   });
 }
 
 
 async function getPlayersByTeam(team_id) {
-  let player_ids_list = await getPlayerIdsByTeam(team_id);
-  let players_info = await getPlayersInfo(player_ids_list);
+  const player_ids_list = await getPlayerIdsByTeam(team_id);
+  const players_info = await getPlayersInfo(player_ids_list);
   return players_info;
 }
 
