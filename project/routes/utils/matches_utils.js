@@ -3,22 +3,6 @@ const e = require("express");
 const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 
 
-async function getMatchesInfo(matches_ids_list){
-    let promises = [];
-    matches_ids_list.map((id) =>
-      promises.push(
-        axios.get(`${api_domain}/fixtures/${id}?include=events.player`, {
-          params: {
-            api_token: process.env.api_token,
-          },
-        })
-      )
-    );
-    let matches_info = await Promise.all(promises);
-    const matches_rel_info = await extractRelevantMatchData(matches_info);
-    return matches_rel_info
-  }
-
   function describeEvent(type, player_name, match_date, match_hour, time, related_player_name) {
     let type_describe;
 
@@ -58,9 +42,25 @@ async function getMatchesInfo(matches_ids_list){
 
   }
 
-  async function extractRelevantMatchData(matches_info) {
-    return await Promise.all(matches_info.map( async (match_info) => {
-      const {stage_id,season_id,league_id,time, id, localteam_id, visitorteam_id, venue_id}=match_info.data.data
+  async function getMatchesInfo(matches_ids_list){
+    let promises = [];
+    matches_ids_list.map((id) =>
+      promises.push(
+        axios.get(`${api_domain}/fixtures/${id}?include=events.player`, {
+          params: {
+            api_token: process.env.api_token,
+          },
+        })
+      )
+    );
+    let matches_info = await Promise.all(promises);
+    const matches_rel_info = await extractRelevantMatchesData(matches_info);
+    return matches_rel_info
+  }
+
+
+  async function extractRelevantMatchData(match_info) {
+    const {stage_id,season_id,league_id,time, id, localteam_id, visitorteam_id, venue_id}=match_info.data.data
       game_hour = time.starting_at.time.split(':').slice(0,2).join(':')
       game_date = time.starting_at.date.split('-').reverse().join('/')
       let stadium_info = await getStadiumName(venue_id) 
@@ -71,7 +71,9 @@ async function getMatchesInfo(matches_ids_list){
             const {type,player_name,minute,related_player_name} = array_item
             return {'event' : describeEvent(type,player_name,game_date,game_hour,minute,related_player_name)}
           }
-          catch(error){}
+          catch(error){
+            throw error
+          }
         }) 
         return{
           match_id: id,
@@ -98,7 +100,13 @@ async function getMatchesInfo(matches_ids_list){
         away_team: visitorteam_id,
         stadium: stadium_info,
       }
-    }))
+  }
+
+
+  async function extractRelevantMatchesData(matches_info) {
+    return await Promise.all(matches_info.map( async (match_info) => {
+        return extractRelevantMatchData(match_info)
+      }))
   }
 
   async function getStadiumName(venue_id){
@@ -111,6 +119,18 @@ async function getMatchesInfo(matches_ids_list){
   }
 
 
+  async function getMatchInfo(match_id){
+    const match_info = await axios.get(`${api_domain}/fixtures/${match_id}`, {
+          params: {
+            include: "events.player",
+            api_token: process.env.api_token,
+          },
+        })
+
+    const matche_rel_info = await extractRelevantMatchData(match_info);
+    return matche_rel_info
+  }
 
 
+  exports.getMatchInfo=getMatchInfo
   exports.getMatchesInfo=getMatchesInfo;
