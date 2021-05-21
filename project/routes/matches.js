@@ -20,29 +20,9 @@ router.get("/:matchId", async (req, res, next) => {
 
 router.get("/stage/:stageId", async (req, res, next) => {
   try {
-    const match_details = await matches_utils.getAllMatchesInfoByStageId(
-      req.params.stageId
-    )
-        
-    for (match_info in match_details){  
-      const match_id = await DButils.execQuery(
-       `INSERT INTO dbo.matches (date, hour, host_team, away_team, referee_id, stadium, home_goal, away_goal)
-        VALUES ('${match_info.date}', '${match_info.hour}','${match_info.home_team}',
-        '${match_info.away_team}', '${match_info.referee_id}','${match_info.stadium}', '${match_info.results.home_goal}',
-        '${match_info.results.away_goal}');
-        SELECT SCOPE_IDENTITY() as id;`
-      );
-      
-      for (e in match_info.events){
-        await DButils.execQuery(
-          `INSERT INTO dbo.events (match_id, description)
-           VALUES ('${match_id.id}', '${e.event}';`
-         );  
-      } 
-    }
+    await matches_utils.initMatchDB()
     
-
-    res.send(match_details);
+    res.send("seccessed");
   } catch (error) {
     next(error);
   }

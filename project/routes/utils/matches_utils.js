@@ -1,5 +1,6 @@
 const axios = require("axios");
 const e = require("express");
+const DButils = require("./DButils");
 const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 
   function describeEvent(type, player_name, match_date, match_hour, time, related_player_name) {
@@ -36,7 +37,7 @@ const api_domain = "https://soccer.sportmonks.com/api/v2.0";
     if (splited_hour[1].length == 1) splited_hour[1] = '0' + splited_hour[1]
     time = splited_hour[0] + ':' + splited_hour[1]
     
-    event_describe = match_date + ',' + time + ',' + minute + ',' +type_describe
+    event_describe = match_date + ',' + time + ',' + minute + ',' +type_describe.replace("'","''")
     return event_describe
 
   }
@@ -146,13 +147,55 @@ async function getAllMatchesInfoByStageId(stage_id){
   {
     return match_info.id
   })
-  const gamesInfo = await getMatchesInfo(matches_ids_list.slice(1,4))
+  const gamesInfo = await getMatchesInfo(matches_ids_list.slice(0,20))
   
   
   return gamesInfo
-
 }
 
+async function getAllSeassons(){
+  cuurent_seasson_id = 17328
+  seassons = await axios.get(`${api_domain}/seasons/${cuurent_seasson_id}`, {
+    params: {
+      include: "stages",
+      api_token: process.env.api_token,
+    },
+  })
+  return seassons.data.data.stages.data.map((stage)=>{
+    return stage.id
+  })
+}
+
+async function initMatchDB(){
+  try {
+    const match_details = await getAllMatchesInfoByStageId(
+      77448541
+    )
+    if (match_details.length == 0) return
+    
+    for (i in match_details){  
+      const match_id = await DButils.execQuery(
+      `INSERT INTO dbo.matches (date, hour, host_team, away_team, referee_id, stage_id, stadium, home_goal, away_goal)
+        VALUES ('${match_details[i].date}', '${match_details[i].hour}',
+        '${match_details[i].home_team}','${match_details[i].away_team}',
+        '${match_details[i].referee_id}','${match_details[i].stage_id}',
+        '${match_details[i].stadium}','${match_details[i].results.home_goal}',
+        '${match_details[i].results.away_goal}');
+        SELECT SCOPE_IDENTITY() as id;`
+      );
+      
+      for (k in match_details[i].events){
+        await DButils.execQuery(
+          `INSERT INTO dbo.events (match_id, description)
+          VALUES ('${match_id[0].id}','${match_details[i].events[k].event}');`
+        );  
+      } 
+    } 
+    }catch(err){
+      throw err  
+  }
+}
+  exports.initMatchDB=initMatchDB;
   exports.getAllMatchesInfoByStageId=getAllMatchesInfoByStageId;
   exports.getMatchInfo=getMatchInfo;
   exports.getMatchesInfo=getMatchesInfo;
