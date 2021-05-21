@@ -3,21 +3,32 @@ const e = require("express");
 const DButils = require("./DButils");
 const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 
-function getMatchInfo(match_details,events){
+async function getMatchInfo(match_id){
+  
+  const match_details = await DButils.execQuery(
+    `SELECT * FROM matches WHERE (match_id = '${match_id}')`
+    )
+
+  if (match_details.length == 0) throw { status: 404, message: "wrong id, association member dosen't exists." }
+
+  const events = await DButils.execQuery(
+    `SELECT * FROM events WHERE (match_id = '${match_id}')`
+    )
+
   match_rel_details = {
-    match_id: match_details.match_id,
-    stage_id: match_details.stage_id,
-    host_team: match_details.host_team,
-    away_team: match_details.away_team,
-    date: match_details.date,
-    hour: match_details.hour,
-    referee_id: match_details.referee_id 
+    match_id: match_details[0].match_id,
+    stage_id: match_details[0].stage_id,
+    host_team: match_details[0].host_team,
+    away_team: match_details[0].away_team,
+    date: match_details[0].date,
+    hour: match_details[0].hour,
+    referee_id: match_details[0].referee_id 
   }
   
-  if (match_details.home_goal != null){
+  if (match_details[0].home_goal != null){
     match_rel_details.results = {
-      home_goal: match_details.home_goal,
-      away_goal: match_details.away_goal
+      home_goal: match_details[0].home_goal,
+      away_goal: match_details[0].away_goal
     }
   }
 
@@ -48,6 +59,19 @@ async function getAllSeassons(){
   })
 }
 
-// exports.getAllMatchesInfoByStageId=getAllMatchesInfoByStageId;
+async function getStageMatches(stage_id) {
+  const matches_ids = await DButils.execQuery(
+    `select match_id from dbo.Matches where stage_id='${stage_id}'`
+  );
+  return matches_ids;
+}
+
+async function getMatchesInfo(matches_ids_array){
+  return await Promise.all(matches_ids_array.map((match_id) => {
+    return getMatchInfo(match_id)
+  }))
+}
+
+exports.getStageMatches=getStageMatches;
 exports.getMatchInfo=getMatchInfo;
-// exports.getMatchesInfo=getMatchesInfo;
+exports.getMatchesInfo=getMatchesInfo;
