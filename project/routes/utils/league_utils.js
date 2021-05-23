@@ -28,6 +28,21 @@ async function getLeagueDetails() {
   };
 }
 
+async function getAllLeagues(){
+  const all_league= await axios.get(`${api_domain}/leagues`,{
+      params: {
+        api_token: process.env.api_token,
+      },
+    }
+  );
+  return all_league.data.data.map((data)=>{
+    return {
+      name: data.name,
+      id: data.id
+    };
+  });
+}
+
 async function getLeagueCurrentSeassonId(){
   const league = await axios.get(
     `${api_domain}/leagues/${LEAGUE_ID}`,
@@ -46,6 +61,46 @@ async function getLeagueCurrentSeassonId(){
   }
 }
 
+async function getLeagueById(id){
+  const league_by_id=await axios.get(`${api_domain}/leagues/${id}`,
+  {
+    params: {
+      api_token: process.env.api_token,
+      include: "country,season"
+    }
+  });
+  return {
+    league_id: league_by_id.data.data.id,
+    league_name: league_by_id.data.data.name, 
+    country:league_by_id.data.data.country.data.name,
+    season: [
+      {
+      season_id: league_by_id.data.data.season.data.id,
+      season_year: league_by_id.data.data.season.data.name
+      }
+    ],
+  }
+}
+
+async function getSeasonByLeagueID(leagueID,seasonID){
+  const league_info=await axios.get(`${api_domain}/leagues/${id}`,
+  {
+    params: {
+      api_token: process.env.api_token,
+      include: "season"
+    }
+  });
+  seasons=league_info.data.data.season;
+  res=seasons.filter(season=> season.data.id==seasonID);
+  return {
+    season_id: res.data.id,
+    season_year: res.data.name,
+    
+  }
+}
+
 
 exports.getLeagueDetails = getLeagueDetails;
 exports.getLeagueCurrentSeassonId = getLeagueCurrentSeassonId;
+exports.getAllLeagues = getAllLeagues;
+exports.getLeagueById=getLeagueById;

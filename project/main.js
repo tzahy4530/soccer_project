@@ -79,8 +79,8 @@ app.get("/alive", (req, res) => res.send("I'm alive"));
 app.use("/users", users);
 app.use("/league", league);
 app.use("/teams", teams);
-app.use("/matches",matches)
-app.use("/associationUsers",ass_users)
+app.use("/matches",matches);
+app.use("/associationUsers",ass_users);
 app.use(auth);
 
 

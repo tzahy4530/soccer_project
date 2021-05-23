@@ -11,4 +11,23 @@ router.get("/getDetails", async (req, res, next) => {
   }
 });
 
+router.get("/:leagueID", async(req,res,next)=>{
+  try{
+    res.send(await league_utils.getLeagueById(req.params.leagueID));
+  }catch(error){
+    next(error);
+  }
+
+});
+
+router.get("/", async(req,res,next)=>{
+    try{ 
+      const leagues_details= await league_utils.getAllLeagues();
+      res.send(leagues_details);
+    }catch(error){
+      next(error);
+     }
+  }
+);
+
 module.exports = router;
