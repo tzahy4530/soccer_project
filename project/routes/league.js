@@ -11,6 +11,19 @@ router.get("/getDetails", async (req, res, next) => {
   }
 });
 
+router.get("/:leagueID/:seasonID", async(req,res,next)=>{
+  try{
+    const result = await league_utils.getSeasonByLeagueID(req.params.leagueID,req.params.seasonID);
+    if (res.length==0){
+      throw 'league doesnt exist';
+    }
+    res.send(result);
+  }catch(error){
+    next(error);
+  }
+
+});
+
 router.get("/:leagueID", async(req,res,next)=>{
   try{
     res.send(await league_utils.getLeagueById(req.params.leagueID));
