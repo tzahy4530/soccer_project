@@ -32,7 +32,7 @@ async function getTeamInfoByName(team_name){
       api_token: process.env.api_token,
     },
   })
-  return extractRelevantTeamData(team_info.data.data[0])
+  return extractRelevantTeamsData(team_info)
 }
 
 async function getAllTeamsInfoBySeassonId(seasson_id){
