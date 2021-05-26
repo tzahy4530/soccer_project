@@ -15,44 +15,36 @@ async function getPlayerIdsByTeam(team_id) {
   return player_ids_list;
 }
 
+async function getPlayerInfoByName(player_name){
+  const players_info = await axios.get(`${api_domain}/players/search/${player_name}`, {
+    params: {
+      api_token: process.env.api_token,
+      include: "team",
+    },
+  })
+  return extractRelevantPlayersData(players_info)
+}
+
+async function getPlayerInfoById(player_id){
+  const player_info = await axios.get(`${api_domain}/players/${player_id}`, {
+    params: {
+      api_token: process.env.api_token,
+      include: "team",
+    },
+  })
+  return extractRelevantPlayerData(player_info.data.data)
+}
+
 async function getPlayersInfo(players_ids_list) {
   let promises = [];
   players_ids_list.map((id) =>
     promises.push(
-      axios.get(`${api_domain}/players/${id}`, {
-        params: {
-          api_token: process.env.api_token,
-          include: "team",
-        },
-      })
+      getPlayerInfoById(id)
     )
   );
   let players_info = await Promise.all(promises);
-  return extractRelevantPlayerData(players_info);
+  return players_info;
 }
-
-
-function extractRelevantPlayerData(players_info) {
-  return players_info.map((player_info) => {
-    const {player_id, fullname, image_path, position_id,
-       common_name, nationality, birthdate, birthcountry, height, weight} = player_info.data.data;
-    const { name } = player_info.data.data.team.data;
-    return {
-      id: player_id,
-      name: fullname,
-      common_name: common_name,
-      position: position_id,
-      team_name: name,
-      nationality: nationality,
-      birthdate: birthdate,
-      birthcountry: birthcountry,
-      height: height,
-      weight: weight,
-      image: image_path,
-    };
-  });
-}
-
 
 async function getPlayersByTeam(team_id) {
   const player_ids_list = await getPlayerIdsByTeam(team_id);
@@ -60,5 +52,42 @@ async function getPlayersByTeam(team_id) {
   return players_info;
 }
 
+function extractRelevantPlayersData(players_info) {
+  try{
+    return players_info.map((player_info) => {
+      return extractRelevantPlayerData(player_info.data.data)
+    });
+  } catch(err){
+      try{
+      return players_info.data.data.map((player_info) => {
+        return extractRelevantPlayerData(player_info)
+      });
+   } catch(err){
+       throw err
+  }
+  } 
+}
+
+function extractRelevantPlayerData(player_info){
+  const {player_id, fullname, image_path, position_id,
+    common_name, nationality, birthdate, birthcountry, height, weight} = player_info;
+ const { name } = player_info.team.data;
+ return {
+   id: player_id,
+   name: fullname,
+   common_name: common_name,
+   position: position_id,
+   team_name: name,
+   nationality: nationality,
+   birthdate: birthdate,
+   birthcountry: birthcountry,
+   height: height,
+   weight: weight,
+   image: image_path,
+ };
+}
+
+exports.getPlayerInfoByName = getPlayerInfoByName;
 exports.getPlayersByTeam = getPlayersByTeam;
 exports.getPlayersInfo = getPlayersInfo;
+exports.getPlayerInfoById = getPlayerInfoById;
