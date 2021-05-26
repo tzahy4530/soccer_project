@@ -37,7 +37,7 @@ async function getFavoriteTeams(user_id) {
 async function deleteFavoriteTeam(user_id, team_id){
   await DButils.execQuery(
     `DELETE FROM dbo.favoriteTeams 
-    WHERE (user_id = '${user_id}', team_id = '${team_id}');`
+    WHERE (user_id = '${user_id}' AND team_id = '${team_id}');`
     );
 }
 
@@ -59,7 +59,7 @@ async function getFavoriteMatches(user_id) {
 async function deleteFavoriteMatch(user_id, match_id){
   await DButils.execQuery(
     `DELETE FROM dbo.favoriteMatches 
-    WHERE (user_id = '${user_id}', match_id = '${match_id}');`
+    WHERE (user_id = '${user_id}' AND match_id = '${match_id}');`
     );
 }
 

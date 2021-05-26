@@ -66,12 +66,27 @@ async function getStageMatches(stage_id) {
   return matches_ids;
 }
 
+async function getSeasonMatches(season_id) {
+  const matches_ids = await DButils.execQuery(
+    `select match_id from dbo.Matches where season_id='${season_id}'`
+  );
+  return matches_ids;
+}
+
+async function getLeagueMatches(league_id) {
+  const matches_ids = await DButils.execQuery(
+    `select match_id from dbo.Matches where league_id='${league_id}'`
+  );
+  return matches_ids;
+}
+
 async function getMatchesInfo(matches_ids_array){
   return await Promise.all(matches_ids_array.map((match_id) => {
     return getMatchInfo(match_id)
   }))
 }
-
-exports.getStageMatches=getStageMatches;
-exports.getMatchInfo=getMatchInfo;
-exports.getMatchesInfo=getMatchesInfo;
+exports.getSeasonMatches = getSeasonMatches;
+exports.getLeagueMatches = getLeagueMatches;
+exports.getStageMatches = getStageMatches;
+exports.getMatchInfo = getMatchInfo;
+exports.getMatchesInfo = getMatchesInfo;
