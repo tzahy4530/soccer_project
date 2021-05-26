@@ -120,6 +120,25 @@ router.delete("/favoriteTeams/:teamId", async (req, res, next) => {
   }
 });
 
+/**
+ * Function for user approve referee role for himself
+ */
+router.post("/approveRole", async(req,res,next)=>{
+  try{
+      if (req.user_id==undefined){
+        throw {status:404, message: 'no user id existing in the system'};
+      }
+      const is_waiting_for_approval=await DButils.execQuery(`SELECT * FROM dbo.Roles WHERE userID=${req.user_id}`);
+      if (is_waiting_for_approval.length==0 || is_waiting_for_approval[0].status!=0){
+        throw {status:404, message:'this user doesnt panding for approval'};
+      }
+      DButils.execQuery(`UPDATE dbo.Roles SET status=1 WHERE userId=${req.user_id}`).then(res.status(200).send('Role approved'));
+  } 
+  catch(error){
+    next(error);
+  }
+
+});
 
 /**
  * This path gets body with matchId and save this team in the favorites list of the logged-in user

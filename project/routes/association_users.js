@@ -98,5 +98,29 @@ router.delete("/deleteMatch/:matchId", async (req, res, next) => {
     next(error);
   }
 });
+// roleId 2 meaning referee role
+// status 0 meaning pending for user approval
+/**
+ * request for append user as role to Role table 
+ * checking if the user existing in user table and if it not exist in Roles table already
+ */
+router.post("/addRefereeToGame", async (req,res,next) => {
+  try{
+    const existing_in_users_table=await DButils.execQuery(`SELECT * FROM dbo.Users WHERE userId=${req.body.userId}`);
+    if (existing_in_users_table.length==0){
+      throw {staus:404, message: 'userId doesnt exist in system'};
+    }
+    const existing_in_role_table=await DButils.execQuery(`SELECT * FROM dbo.Roles WHERE userId=${req.body.userId}`);
+    if (existing_in_role_table.length!=0){
+      throw {status: 404, message: 'userId is already exist in role table'};
+    }
+    DButils.execQuery(`INSERT INTO dbo.Roles (userId,roleId,status) VALUES (${req.body.userId},2,0)`).then(
+    res.status(200).send('The referee was successfully added.'));
+  }
+  catch(error){
+    next(error);
+  }
+
+})
 
 module.exports = router;
