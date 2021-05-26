@@ -17,12 +17,15 @@ async function getMatchInfo(match_id){
 
   match_rel_details = {
     match_id: match_details[0].match_id,
+    league_id: match_details[0].league_id,
+    season_id: match_details[0].season_id,
     stage_id: match_details[0].stage_id,
     host_team: match_details[0].host_team,
     away_team: match_details[0].away_team,
     date: match_details[0].date,
     hour: match_details[0].hour,
-    referee_id: match_details[0].referee_id 
+    referee_id: match_details[0].referee_id,
+    stadium: match_details[0].stadium
   }
   
   if (match_details[0].home_goal != null){
