@@ -11,9 +11,9 @@ router.get("/getDetails", async (req, res, next) => {
   }
 });
 
-router.get("/:leagueID/:seasonID", async(req,res,next)=>{
+router.get("/:leagueId/:seasonId", async(req,res,next)=>{
   try{
-    const result = await league_utils.getSeasonByLeagueID(req.params.leagueID,req.params.seasonID);
+    const result = await league_utils.getSeasonByLeagueID(req.params.leagueId,req.params.seasonId);
     if (res.length==0){
       throw 'league doesnt exist';
     }
@@ -24,9 +24,9 @@ router.get("/:leagueID/:seasonID", async(req,res,next)=>{
 
 });
 
-router.get("/:leagueID", async(req,res,next)=>{
+router.get("/:leagueId", async(req,res,next)=>{
   try{
-    res.send(await league_utils.getLeagueById(req.params.leagueID));
+    res.send(await league_utils.getLeagueById(req.params.leagueId));
   }catch(error){
     next(error);
   }
