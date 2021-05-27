@@ -4,34 +4,27 @@ var router = express.Router();
 const DButils = require("./utils/DButils");
 const association_users_utils = require("./utils/association_users_utils");
 const users_utils = require("./utils/users_utils");
+const auth_utils = require("./utils/auth_utils");
 
 router.use(async function (req, res, next) {
-  if (req.session && req.session.user_id) {
-    DButils.execQuery("SELECT userId FROM dbo.users")
-      .then((users) => {
-        if (users.find((x) => x.userId === req.session.user_id)) {
+  try{
+    if (req.session && req.session.user_id) {
+        const valid = await auth_utils.isValidSession(req.session.user_id)
+        if(valid){
           req.user_id = req.session.user_id;
-          next();
-        }
-      })
-      .catch((err) => next(err));
-  } else {
+          next();}}
+  else {
     res.sendStatus(401);
-  }
+  }}catch(err){next(err)}
 });
 
 
 router.use(async function (req, res, next) {
-    DButils.execQuery(`SELECT roleId FROM dbo.Roles WHERE userId = '${req.user_id}'`)
-      .then((roles) => {
-        if (roles.find((x) => x.roleId == process.env.associationUserRole)) {
-          next();
-        }
-        else {
-          res.sendStatus(403);
-        }
-      })
-      .catch((err) => next(err));
+  try{
+    const is_association = await auth_utils.isAssociationUser(req.user_id)
+    if(is_association){next();}
+    else {res.sendStatus(403);}
+  }catch(err){next(err)}
   });
 
 

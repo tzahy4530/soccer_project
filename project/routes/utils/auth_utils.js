@@ -53,6 +53,25 @@ function hashPassword(password){
     parseInt(process.env.bcrypt_saltRounds)
   );
 }
+
+async function isValidSession(user_id){
+    const users = await DButils.execQuery(`SELECT userId FROM dbo.users WHERE userId = '${user_id}'`)
+    if (users.find((user) => user.userId === user_id)) {
+        return true
+    }
+    return false
+}
+
+async function isAssociationUser(user_id){
+  const user_roles = await DButils.execQuery(`SELECT roleId FROM dbo.Roles WHERE userId = '${user_id}'`)
+  if (user_roles.find((role) => role.roleId == process.env.associationUserRole)) {
+    return true
+  }
+  return false
+}
+
+  exports.isAssociationUser = isAssociationUser;
+  exports.isValidSession = isValidSession;
   exports.hashPassword = hashPassword;
   exports.getUserIdByUsername = getUserIdByUsername;
   exports.validLoginDetails = validLoginDetails;
