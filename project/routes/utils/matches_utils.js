@@ -72,6 +72,26 @@ async function getMatchesInfo(matches_ids_array){
     return getMatchInfo(match_id)
   }))
 }
+
+async function isValidDateForMatch(home_team, away_team, date, stadium){
+  const teams_matches = await DButils.execQuery(
+    `select * from dbo.Matches WHERE (date='${date}'
+     AND (host_team = '${home_team}' OR host_team = '${away_team}' OR away_team = '${home_team}'
+      OR away_team = '${away_team}' ))`
+      );
+  if (teams_matches.length > 0){
+    return false
+  }
+  const stadium_matches = await DButils.execQuery(
+    `select * from dbo.Matches WHERE (date='${date}' AND stadium='${stadium}')`
+      );
+  if (stadium_matches.length > 0 ){
+    return false
+  }
+  return true
+}
+
+exports.isValidDateForMatch = isValidDateForMatch;
 exports.getSeasonMatches = getSeasonMatches;
 exports.getLeagueMatches = getLeagueMatches;
 exports.getStageMatches = getStageMatches;

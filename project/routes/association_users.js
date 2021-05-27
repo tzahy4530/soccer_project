@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 const association_users_utils = require("./utils/association_users_utils");
 const users_utils = require("./utils/users_utils");
+const matches_utils = require("./utils/matches_utils");
 const auth_utils = require("./utils/auth_utils");
 
 router.use(async function (req, res, next) {
@@ -63,9 +64,11 @@ router.put("/results/:matchId", async (req, res, next) => {
 
 router.post("/addMatch", async (req, res, next) => {
   try {
-    // check if Referee is clear Before!!!!!!
-    
-    //referee is clear Dr.Shaked.
+    const validDate = await matches_utils.isValidDateForMatch(
+      req.body.host_team, req.body.away_team, req.body.date, req.body.stadium)
+    if(!validDate){
+      throw {status:403, message: "Match date isn't available."}
+    }
     await association_users_utils.addNewMatch(
       req.body.date, req.body.hour, req.body.host_team, req.body.away_team,
       req.body.league_id, req.body.season_id, req.body.stage_id, 
