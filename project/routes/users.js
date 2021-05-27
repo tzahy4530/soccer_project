@@ -128,11 +128,13 @@ router.post("/approveRole", async(req,res,next)=>{
       if (req.user_id==undefined){
         throw {status:404, message: 'no user id existing in the system'};
       }
-      const is_waiting_for_approval=await DButils.execQuery(`SELECT * FROM dbo.Roles WHERE userID=${req.user_id}`);
-      if (is_waiting_for_approval.length==0 || is_waiting_for_approval[0].status!=0){
+      const is_waiting_for_approval=await DButils.execQuery(`SELECT * FROM dbo.RequestRole WHERE userId=${req.user_id}`);
+      if (is_waiting_for_approval.length==0){
         throw {status:404, message:'this user doesnt panding for approval'};
       }
-      DButils.execQuery(`UPDATE dbo.Roles SET status=1 WHERE userId=${req.user_id}`).then(res.status(200).send('Role approved'));
+      DButils.execQuery(`DELETE FROM dbo.RequestRole WHERE userId=${req.user_id}`)
+      .then(DButils.execQuery(`INSERT INTO dbo.Roles (userId,roleId) VALUES (${req.user_id},${is_waiting_for_approval[0].roleId})`))
+      .then(res.status(200).send('Role approved'));
   } 
   catch(error){
     next(error);
