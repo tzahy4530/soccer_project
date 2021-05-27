@@ -1,7 +1,6 @@
 const axios = require("axios");
 const api_domain = process.env.api_domain;
 
-
 async function getTeamsInfoById(teams_ids_list){
     let promises = [];
     teams_ids_list.map((id) =>

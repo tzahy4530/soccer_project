@@ -1,7 +1,4 @@
-const axios = require("axios");
-const e = require("express");
 const DButils = require("./DButils");
-const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 
 async function getMatchInfo(match_id){
   
@@ -47,19 +44,6 @@ async function getMatchInfo(match_id){
   }
 
   return match_rel_details
-}
-
-async function getAllSeassons(){
-  cuurent_seasson_id = 17328
-  seassons = await axios.get(`${api_domain}/seasons/${cuurent_seasson_id}`, {
-    params: {
-      include: "stages",
-      api_token: process.env.api_token,
-    },
-  })
-  return seassons.data.data.stages.data.map((stage)=>{
-    return stage.id
-  })
 }
 
 async function getStageMatches(stage_id) {

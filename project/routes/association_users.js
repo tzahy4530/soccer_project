@@ -1,7 +1,5 @@
-
 var express = require("express");
 var router = express.Router();
-const DButils = require("./utils/DButils");
 const association_users_utils = require("./utils/association_users_utils");
 const users_utils = require("./utils/users_utils");
 const auth_utils = require("./utils/auth_utils");
