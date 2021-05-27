@@ -26,11 +26,14 @@ async function updateMatchResults(match_id, home_goal, away_goal){
  );
 }
 
-async function addNewMatch(date, hour, host_team, away_team, stage_id, referee_id, stadium){
+async function addNewMatch(date, hour, host_team, away_team,
+  league_id, season_id, stage_id, stadium){
   await DButils.execQuery(
-    `INSERT INTO dbo.matches (date,hour,host_team,away_team,stage_id,referee_id,stadium)
+    `INSERT INTO dbo.matches (date,hour,host_team,away_team,league_id, season_id,
+      stage_id,stadium)
     VALUES ('${date}','${hour}','${host_team}','${away_team}',
-    '${stage_id}','${referee_id}','${stadium}');`
+    '${league_id}','${season_id}',
+    '${stage_id}','${stadium}');`
  );
 }
 

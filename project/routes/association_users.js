@@ -72,9 +72,13 @@ router.put("/results/:matchId", async (req, res, next) => {
 
 router.post("/addMatch", async (req, res, next) => {
   try {
+    // check if Referee is clear Before!!!!!!
+    
+    //referee is clear Dr.Shaked.
     await association_users_utils.addNewMatch(
       req.body.date, req.body.hour, req.body.host_team, req.body.away_team,
-      req.body.stage_id, req.body.referee_id, req.body.stadium
+      req.body.league_id, req.body.season_id, req.body.stage_id, 
+      req.body.stadium
     )
     res.status(200).send("The match was successfully added.");
   } catch (error) {
