@@ -3,6 +3,7 @@ var express = require("express");
 var router = express.Router();
 const DButils = require("./utils/DButils");
 const association_users_utils = require("./utils/association_users_utils");
+const users_utils = require("./utils/users_utils");
 
 router.use(async function (req, res, next) {
   if (req.session && req.session.user_id) {
@@ -21,9 +22,9 @@ router.use(async function (req, res, next) {
 
 
 router.use(async function (req, res, next) {
-    DButils.execQuery(`SELECT permissions FROM dbo.users WHERE userId = '${req.user_id}'`)
-      .then((permissions) => {
-        if (permissions[0].permissions >= 2) {
+    DButils.execQuery(`SELECT roleId FROM dbo.Roles WHERE userId = '${req.user_id}'`)
+      .then((roles) => {
+        if (roles.find((x) => x.roleId == process.env.associationUserRole)) {
           next();
         }
         else {
@@ -106,16 +107,21 @@ router.delete("/deleteMatch/:matchId", async (req, res, next) => {
  */
 router.post("/AppointmentReferee", async (req,res,next) => {
   try{
-    const existing_in_users_table=await DButils.execQuery(`SELECT * FROM dbo.Users WHERE userId=${req.body.userId}`);
-    if (existing_in_users_table.length==0){
+    user_id = req.body.user_id
+    user_exist = await users_utils.userExist(user_id)
+    if (!user_exist){
       throw {staus:404, message: 'userId doesnt exist in system'};
     }
-    const existing_in_role_table=await DButils.execQuery(`SELECT * FROM dbo.Roles WHERE userId=${req.body.userId}`);
-    if (existing_in_role_table.length!=0){
-      throw {status: 404, message: 'userId is already exist in role table'};
+    const appointmentAble = await association_users_utils.appointmentableToReferee(user_id)
+    if (!appointmentAble){
+      throw {status: 404, message: 'userId is already referee or not appointmentable to referee'};
     }
-    DButils.execQuery(`INSERT INTO dbo.Roles (userId,roleId,status) VALUES (${req.body.userId},2,0)`).then(
-    res.status(200).send('The referee was successfully added.'));
+    try{
+      await association_users_utils.sendRefereeAppointmentRequest(user_id)
+    } catch(err){
+      throw {status:404, message: 'Appointment request has already been sent to this userId'}
+    }
+    res.status(200).send('Referee appointment request have been sent to user.');
   }
   catch(error){
     next(error);

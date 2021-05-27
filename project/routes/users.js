@@ -123,18 +123,14 @@ router.delete("/favoriteTeams/:teamId", async (req, res, next) => {
 /**
  * Function for user approve referee role for himself
  */
-router.post("/approveRole", async(req,res,next)=>{
+router.post("/refereeApprove", async(req,res,next)=>{
   try{
-      if (req.user_id==undefined){
-        throw {status:404, message: 'no user id existing in the system'};
-      }
-      const is_waiting_for_approval=await DButils.execQuery(`SELECT * FROM dbo.RequestRole WHERE userId=${req.user_id}`);
-      if (is_waiting_for_approval.length==0){
+      const awaiting_for_approval= users_utils.awaitingRefereeRequest(req.user_id)
+      if (!awaiting_for_approval){
         throw {status:404, message:'this user doesnt panding for approval'};
       }
-      DButils.execQuery(`DELETE FROM dbo.RequestRole WHERE userId=${req.user_id}`)
-      .then(DButils.execQuery(`INSERT INTO dbo.Roles (userId,roleId) VALUES (${req.user_id},${is_waiting_for_approval[0].roleId})`))
-      .then(res.status(200).send('Role approved'));
+      users_utils.userRefereeAppointment(req.user_id)
+      res.status(200).send('userId approved request to be referee.');
   } 
   catch(error){
     next(error);

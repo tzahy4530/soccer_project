@@ -1,7 +1,5 @@
-const axios = require("axios");
 const e = require("express");
 const DButils = require("./DButils");
-const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 
 
 async function updateEvent(event_id, description){
@@ -55,6 +53,21 @@ async function deleteMatch(match_id){
     )
 }
 
+async function appointmentableToReferee(user_id){
+  const user_roles = await DButils.execQuery(`SELECT * FROM dbo.Roles WHERE userId=${user_id}`);
+  if (user_roles.find((x) => x.roleId != process.env.fanRole)){
+    return false
+  }
+  return true
+}
+
+async function sendRefereeAppointmentRequest(user_id){
+  await DButils.execQuery(`INSERT INTO dbo.RequestRole (userId,roleId) VALUES
+   (${user_id},${process.env.refereeRole})`)
+}
+
+exports.sendRefereeAppointmentRequest = sendRefereeAppointmentRequest;
+exports.appointmentableToReferee = appointmentableToReferee;
 exports.deleteMatch = deleteMatch;
 exports.deleteEvent = deleteEvent;
 exports.addNewMatch = addNewMatch;

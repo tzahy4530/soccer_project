@@ -1,3 +1,4 @@
+const { express } = require("cookies");
 const DButils = require("./DButils");
 // Players
 async function markPlayerAsFavorite(user_id, player_id) {
@@ -63,7 +64,39 @@ async function deleteFavoriteMatch(user_id, match_id){
     );
 }
 
+async function userExist(user_id){
+  const existing_in_users_table = await DButils.execQuery(`SELECT * FROM dbo.Users WHERE userId='${user_id}'`);
+  if (existing_in_users_table.length==0){
+    return false
+  }
+  return true
+}
 
+
+// refereeRequests
+async function awaitingRefereeRequest(user_id){
+  const user_referee_requests = await DButils.execQuery(
+    `SELECT * FROM dbo.RequestRole WHERE (userId=${req.user_id} AND
+       roleId=${process.env.refereeRole})`
+    );
+  if (user_referee_requests.length == 0){
+    return false
+  }
+  return true
+}
+
+async function userRefereeAppointment(user_id){
+  await DButils.execQuery(`DELETE FROM dbo.RequestRole WHERE userId=${user_id}`)
+  await DButils.execQuery(`INSERT INTO dbo.Roles (userId,roleId) VALUES
+   (${user_id},${process.env.refereeRole})`)
+}
+
+//utils
+exports.userExist = userExist;
+
+//Referee Requests
+exports.awaitingRefereeRequest = awaitingRefereeRequest;
+exports.userRefereeAppointment =userRefereeAppointment;
 
 //Players function export
 exports.markPlayerAsFavorite = markPlayerAsFavorite;
