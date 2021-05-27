@@ -1,33 +1,31 @@
 var express = require("express");
 var router = express.Router();
-const DButils = require("../routes/utils/DButils");
-const bcrypt = require("bcryptjs");
+const DButils = require("./utils/DButils");
+const auth_utils = require("./utils/auth_utils");
+
 
 router.post("/Register", async (req, res, next) => {
   try {
     // parameters exists
     // valid parameters
     // username exists
-    const users = await DButils.execQuery(
-      "SELECT username FROM dbo.users"
-    );
-    console.log(users);
-    if (users.find((x) => x.username === req.body.username))
+    const username = req.body.username
+    const firstname = req.body.firstname
+    const lastname = req.body.lastname
+    const password = req.body.password
+    const email = req.body.email
+    const link = req.body.link
+
+    const valid_username = await auth_utils.validUsername(username)
+    if (!valid_username)
       throw { status: 409, message: "Username taken" };
 
     //hash the password
-    let hash_password = bcrypt.hashSync(
-      req.body.password,
-      parseInt(process.env.bcrypt_saltRounds)
-    );
-    req.body.password = hash_password;
+    const hash_password = auth_utils.hashPassword(password)
 
     // add the new username
-    await DButils.execQuery(
-      `INSERT INTO dbo.users (username, firstname, lastname, password, email, link)
-       VALUES ('${req.body.username}', '${req.body.firstname}',
-        '${req.body.lastname}', '${hash_password}', '${req.body.email}', '${req.body.link}')`
-    );
+    await auth_utils.addNewUser(username,firstname,lastname,hash_password,email,link)
+
     res.status(201).send("user created");
   } catch (error) {
     next(error);
@@ -36,21 +34,14 @@ router.post("/Register", async (req, res, next) => {
 
 router.post("/Login", async (req, res, next) => {
   try {
-    const user = (
-      await DButils.execQuery(
-        `SELECT * FROM dbo.users WHERE username = '${req.body.username}'`
-      )
-    )[0];
-    // user = user[0];
-    console.log(user);
+    valid_details = await auth_utils.validLoginDetails(req.body.username,req.body.password)
 
-    // check that username exists & the password is correct
-    if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
+    if (!valid_details) {
       throw { status: 401, message: "Username or Password incorrect" };
     }
-
+    user_id = await auth_utils.getUserIdByUsername(req.body.username)
     // Set cookie
-    req.session.user_id = user.userId;
+    req.session.user_id = user_id;
 
     // return cookie
     res.status(200).send("login succeeded");
