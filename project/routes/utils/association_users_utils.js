@@ -1,3 +1,5 @@
+const { assert } = require("console");
+const { resourceUsage } = require("process");
 const DButils = require("./DButils");
 
 
@@ -68,6 +70,41 @@ async function sendRefereeAppointmentRequest(user_id){
    (${user_id},${process.env.refereeRole})`)
 }
 
+async function isReferee(user_id) {
+  const is_referee = await DButils.execQuery(`SELECT * FROM dbo.Roles WHERE userId=${user_id} and roleId=${process.env.refereeRole}`);
+  return is_referee.length==1;
+}
+
+async function isRefereeInSeason(user_id,league_id,season_id) {
+  const is_referee = await DButils.execQuery(`SELECT * FROM dbo.RefereeAppointments WHERE userId=${user_id} and leagueId=${league_id} and seasonId=${season_id}`);
+  return is_referee.length==1;
+}
+
+async function addRefereeToSeason(userId,leagueId,seasonId) {
+  try{
+      await DButils.execQuery(`INSERT INTO dbo.RefereeAppointments (userId,leagueId,seasonId) VALUES (${userId},${leagueId},${seasonId})`);
+  }
+  catch(error){
+    throw error;
+  }
+}
+async function getDateByMatchId(match_id) {
+  const match_details=await DButils.execQuery(`SELECT date FROM dbo.Matches where match_id=${match_id}`);
+  if (match_details.length!=1){
+    throw {status:404, message: 'match isnt find'};
+  }
+  return match_details[0].date;
+}
+
+async function checkValidDateForRefereeAppointment(user_id,match_id) {
+  const refereeMatches=await DButils.execQuery(`SELECT date FROM dbo.Matches where referee_id=${user_id}`);
+  const match_date=await getDateByMatchId(match_id);
+  return !refereeMatches.find((x)=>x.date==match_date)
+}
+
+async function appointmentRefeereToMatch(user_id,match_id) {
+  await DButils.execQuery(`UPDATE dbo.Matches SET referee_id=${user_id} where match_id=${match_id}`)
+}
 exports.sendRefereeAppointmentRequest = sendRefereeAppointmentRequest;
 exports.appointmentableToReferee = appointmentableToReferee;
 exports.deleteMatch = deleteMatch;
@@ -76,3 +113,9 @@ exports.addNewMatch = addNewMatch;
 exports.updateMatchResults = updateMatchResults;
 exports.addEvent = addEvent;
 exports.updateEvent = updateEvent;
+exports.isReferee = isReferee;
+exports.addRefereeToSeason = addRefereeToSeason;
+exports.isRefereeInSeason = isRefereeInSeason;
+exports.checkValidDateForRefereeAppointment = checkValidDateForRefereeAppointment;
+exports.appointmentRefeereToMatch = appointmentRefeereToMatch;
+

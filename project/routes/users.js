@@ -124,7 +124,7 @@ router.post("/refereeApprove", async(req,res,next)=>{
   try{
       const awaiting_for_approval= users_utils.awaitingRefereeRequest(req.user_id)
       if (!awaiting_for_approval){
-        throw {status:404, message:'this user doesnt panding for approval'};
+        throw {status:404, message:'this user doesnt panding for approva'};
       }
       users_utils.userRefereeAppointment(req.user_id)
       res.status(200).send('userId approved request to be referee.');

@@ -6,7 +6,7 @@ const LEAGUE_ID = process.env.league_id;
 async function getClosetMatch() {
   try{
     const closet_match= await DButils.execQuery(
-      'SELECT TOP 1 * from dbo.Matches where CONVERT(DATETIME,date,103) > GETDATE() ORDER BY CONVERT(DATETIME,date,103)'
+      'SELECT TOP 1 match_id, date, hour, host_team, away_team, referee_id, stage_id, stadium, season_id from dbo.Matches where CONVERT(DATETIME,date,103) >= GETDATE() ORDER BY CONVERT(DATETIME,date,103)'
     );
     return closet_match;
     }

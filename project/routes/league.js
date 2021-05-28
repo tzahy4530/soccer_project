@@ -5,7 +5,7 @@ const league_utils = require("./utils/league_utils");
 router.get("/getDetails", async (req, res, next) => {
   try {
     const league_details = await league_utils.getLeagueDetails();
-    res.send(league_details);
+    res.status(200).send(league_details);
   } catch (error) {
     next(error);
   }
@@ -17,7 +17,7 @@ router.get("/:leagueId/:seasonId", async(req,res,next)=>{
     if (res.length==0){
       throw 'league doesnt exist';
     }
-    res.send(result);
+    res.status(200).send(result);
   }catch(error){
     next(error);
   }
@@ -26,7 +26,7 @@ router.get("/:leagueId/:seasonId", async(req,res,next)=>{
 
 router.get("/:leagueId", async(req,res,next)=>{
   try{
-    res.send(await league_utils.getLeagueById(req.params.leagueId));
+    res.status(200).send(await league_utils.getLeagueById(req.params.leagueId));
   }catch(error){
     next(error);
   }
@@ -36,7 +36,7 @@ router.get("/:leagueId", async(req,res,next)=>{
 router.get("/", async(req,res,next)=>{
     try{ 
       const leagues_details= await league_utils.getAllLeagues();
-      res.send(leagues_details);
+      res.status(200).send(leagues_details);
     }catch(error){
       next(error);
      }
