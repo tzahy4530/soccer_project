@@ -1,22 +1,19 @@
 require("dotenv").config();
 const sql = require("mssql");
 
-const config = {
-  user: process.env.tedious_userName,
-  password: process.env.tedious_password,
-  server: process.env.tedious_server,
-  database: process.env.tedious_database,
-  options: {
-    encrypt: true,
-    enableArithAbort: true
-  }
-};
+var pool;
+var poolConnect;
 
-const pool = new sql.ConnectionPool(config);
-const poolConnect = pool.connect();
+async function openDBPool(config){
+  pool = new sql.ConnectionPool(config); 
+  poolConnect = await pool.connect(); 
+}
+
+async function closeDBPool(){
+  pool.close()
+}
 
 exports.execQuery = async function (query) {
-  await poolConnect;
   try {
     var result = await pool.request().query(query);
     return result.recordset;
@@ -25,3 +22,6 @@ exports.execQuery = async function (query) {
     throw err;
   }
 };
+
+exports.openDBPool = openDBPool
+exports.closeDBPool = closeDBPool

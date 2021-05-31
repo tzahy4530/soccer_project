@@ -1,7 +1,5 @@
 //#region global imports
 const DButils = require("./routes/utils/DButils");
-const axios = require("axios");
-const bcrypt = require("bcryptjs");
 require("dotenv").config();
 //#endregion
 //#region express configures
@@ -95,6 +93,21 @@ app.use(function (err, req, res, next) {
 const server = app.listen(port, () => {
   console.log(`Server listen on port ${port}`);
 });
+
+const DBconfig = {
+  user: process.env.tedious_userName,
+  password: process.env.tedious_password,
+  server: process.env.tedious_server,
+  database: process.env.tedious_database,
+  options: {
+    encrypt: true,
+    enableArithAbort: true
+  }
+};
+
+DButils.openDBPool(DBconfig)
+
+
 
 // process.on("SIGINT", function () {
 //   if (server) {

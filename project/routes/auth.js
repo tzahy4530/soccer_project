@@ -14,6 +14,7 @@ router.post("/Register", async (req, res, next) => {
     const password = req.body.password
     const email = req.body.email
     const link = req.body.link
+    const country = req.body.country
 
     const valid_username = await auth_utils.validUsername(username)
     if (!valid_username)
@@ -23,7 +24,7 @@ router.post("/Register", async (req, res, next) => {
     const hash_password = auth_utils.hashPassword(password)
 
     // add the new username
-    await auth_utils.addNewUser(username,firstname,lastname,hash_password,email,link)
+    await auth_utils.addNewUser(username,firstname,lastname,hash_password,email,link,country)
 
     res.status(201).send("user created");
   } catch (error) {

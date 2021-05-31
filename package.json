@@ -1,5 +1,8 @@
 {
   "name": "soccer_project",
+  "jest":{
+    "setupFilesAfterEnv": ["<rootDir>/tests/setupTests.js"]
+  },
   "version": "1.0.0",
   "description": "",
   "main": "./project/main.js",
@@ -18,6 +21,7 @@
   "devDependencies": {
     "jest": "^27.0.3"
   },
+
   "scripts": {
     "test": "jest"
   },
