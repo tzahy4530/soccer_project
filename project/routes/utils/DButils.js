@@ -7,10 +7,11 @@ var poolConnect;
 async function openDBPool(config){
   pool = new sql.ConnectionPool(config); 
   poolConnect = await pool.connect(); 
+
 }
 
 async function closeDBPool(){
-  pool.close()
+  await pool.close()
 }
 
 exports.execQuery = async function (query) {
