@@ -1,0 +1,35 @@
+language: node_js
+node_js:
+  - "stable"
+cache: npm
+script:
+  - npm run test
+install:
+  - npm ci
+before_deploy:
+  - git config --local user.name "tzahy4530"
+  - git config --local user.email "tzahy4530@gmail.com"
+  - export TRAVIS_TAG=${TRAVIS_TAG:-$(date + '%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+  - git tag $TRAVIS_TAG --force
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file_glob: true
+  file: ${TRAVIS_BUILD_DIR}${REPO}-${BUILD_ENV}-${TRAVIS_TAG}-${TRAVIS_BUILD_NUMBER}.tar.gz
+  skip_cleanup: true
+  on:
+    tags: false
+  branches:
+    only:
+    - master
+
+
+# before_install:
+# install:
+# before_script:
+# script:
+# after_success:
+# after_failure:
+# before_deploy:
+# deploy:
+# after_deploy:

@@ -23,7 +23,8 @@
   },
 
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "travis" : "npm test"
   },
   "repository": {
     "type": "git",
