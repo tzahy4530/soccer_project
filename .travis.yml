@@ -21,7 +21,7 @@ deploy:
     tags: false
   branches:
     only:
-    - master
+    - travis_test
 
 
 # before_install:
