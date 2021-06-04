@@ -24,7 +24,7 @@
 
   "scripts": {
     "test": "jest",
-    "travis" : "node ./tests/setupTests.js"
+    "travis" : "npm run test"
   },
   "repository": {
     "type": "git",
