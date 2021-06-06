@@ -1,8 +1,13 @@
 language: node_js
-node_js: '10'
+node_js: 
+  - '10'
+  - node
 cache: npm
 script: npm run travis
 install: npm ci
+env:
+ - COOKIE_SECRET=$NF2c!b&Tus/UKtiidrhH%iX#{B}9C}<*";gg"!,n>v]/*cQ%tgc=Pd('F+^NEl
+
 before_deploy:
   - git config --local user.name "tzahy4530"
   - git config --local user.email "tzahy4530@gmail.com"
