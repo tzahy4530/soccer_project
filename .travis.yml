@@ -5,6 +5,28 @@ node_js:
 cache: npm
 script: npm run travis
 install: npm ci
+env:
+ - tedious_userName=socceradmin
+ - tedious_password=NatyVeTzah!
+ - tedious_server=sqlsoccerserver.database.windows.net
+ - tedious_database=soccerdb
+ - test_userName=dbsoccertest_1
+ - test_password=DB_soccerTest
+ - test_server=dbsoccertest.database.windows.net
+ - test_database=dbsoccerTest
+ - COOKIE_SECRET=$NF2c!b&Tus/UKtiidrhH%iX#{B}9C}<*";gg"!,n>v]/*cQ%tgc=Pd('F+^NEl
+ - api_token=ESOcmsKJJ9B3fcaWLp2hFV3cHj9Sdf1R4rmK3A0jqaqNik0ETwlw3EYZcQha
+ - league_id=271
+ - api_domain=https://soccer.sportmonks.com/api/v2.0
+ - fanRole=1
+ - playerRole=2
+ - coachRole=3
+ - teamManagerRole=4
+ - teamOwnerRole=5
+ - refereeRole=6
+ - associationUserRole=7
+ - systemManagerRole=8
+ - removeAllTables=DELETE from dbo.RefereeAppointments where 1=1 DELETE from dbo.Roles where 1=1 DELETE from dbo.Matches where 1=1 DELETE from dbo.Users where 1=1
 before_deploy:
   - git config --local user.name "tzahy4530"
   - git config --local user.email "tzahy4530@gmail.com"
