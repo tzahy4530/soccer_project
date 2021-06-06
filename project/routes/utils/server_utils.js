@@ -88,13 +88,14 @@ app.use(function (err, req, res, next) {
 });
 
 
-function openServer(DBconfig){
+function openServer(){
 server = app.listen(port, () => {
   console.log(`Server listen on port ${port}`);
 });
 }
 
 function closeServer(){
+    console.log("server stop.")
     server.close()
 }
 

@@ -13,9 +13,7 @@ const DBconfig = {
   }
 };
 DButils.openDBPool(DBconfig)
-DButils.closeDBPool()
 server_utils.openServer()
-server_utils.closeServer()
 
 // process.on("SIGINT", function () {
 //   if (server) {
