@@ -25,12 +25,8 @@
     "jest": "^27.0.3"
   },
   "scripts": {
-<<<<<<< HEAD
-    "test": "jest --maxWorkers 1"
-=======
-    "test": "jest",
+    "test": "jest --maxWorkers 1",
     "travis" : "npm run test"
->>>>>>> 25f28b5c8f869f64b209547b8072be2c9726e7d4
   },
   "repository": {
     "type": "git",
