@@ -19,7 +19,8 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "morgan": "^1.10.0",
-    "mssql": "^7.1.0"
+    "mssql": "^7.1.0",
+    "travis": "^0.1.1"
   },
   "devDependencies": {
     "jest": "^27.0.3"
