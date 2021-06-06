@@ -1,6 +1,7 @@
 
 const DButils = require('../project/routes/utils/DButils')
 const server_utils = require('../project/routes/utils/server_utils')
+jest.setTimeout(100000)
 
 async function clearDB(){
     await DButils.execQuery(process.env.removeAllTables)
@@ -23,6 +24,6 @@ global.beforeAll(async () => {
 
 global.afterAll(async() =>{
     server_utils.closeServer()
-   await clearDB()
-   await DButils.closeDBPool()
+    await clearDB()
+    await DButils.closeDBPool()
 })
