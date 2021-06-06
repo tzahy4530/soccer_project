@@ -15,6 +15,7 @@ const DBconfig = {
 DButils.openDBPool(DBconfig)
 server_utils.openServer()
 
+//
 // process.on("SIGINT", function () {
 //   if (server) {
 //     server.close(() => console.log("server closed"));
