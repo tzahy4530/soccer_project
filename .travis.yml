@@ -20,7 +20,7 @@ deploy:
     tags: false
   branches:
     only:
-    - main
+    - test_travis
 
 
 # before_install:
