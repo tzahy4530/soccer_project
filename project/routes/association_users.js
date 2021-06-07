@@ -104,36 +104,11 @@ router.delete("/deleteMatch/:matchId", async(req, res, next) => {
  * request for append user as role to Role table 
  * checking if the user existing in user table and if it not exist in Roles table already
  */
-<<<<<<< Updated upstream
-router.post("/AppointmentReferee", async (req,res,next) => {
-  try{
-    username=req.body.username;
-    user_id = await auth_utils.getUserIdByUsername(username);
-    user_exist = await users_utils.userExist(user_id);
-    if (!user_exist){
-      throw {staus:404, message: 'userId doesnt exist in system'};
-    }
-    const appointmentAble = await association_users_utils.appointmentableToReferee(user_id)
-    if (!appointmentAble){
-      throw {status: 404, message: 'userId is already referee or not appointmentable to referee'};
-    }
-    try{
-      await association_users_utils.sendRefereeAppointmentRequest(user_id)
-    } catch(err){
-      throw {status:404, message: 'Appointment request has already been sent to this userId'}
-    }
-    res.status(200).send('Referee appointment request have been sent to user.');
-  }
-  catch(error){
-    console.log(error.message);
-    next(error);
-  }
-=======
 router.post("/AppointmentReferee", async(req, res, next) => {
     try {
         username = req.body.username;
         user_id = await auth_utils.getUserIdByUsername(username);
-        user_exist = await users_utils.userExist(user_id)
+        user_exist = await users_utils.userExist(user_id);
         if (!user_exist) {
             throw { staus: 404, message: 'userId doesnt exist in system' };
         }
@@ -148,10 +123,10 @@ router.post("/AppointmentReferee", async(req, res, next) => {
         }
         res.status(200).send('Referee appointment request have been sent to user.');
     } catch (error) {
+        console.log(error.message);
         next(error);
     }
->>>>>>> Stashed changes
-})
+});
 
 router.post("/AppointmentRefereeToSeason", async(req, res, next) => {
     try {
@@ -166,15 +141,8 @@ router.post("/AppointmentRefereeToSeason", async(req, res, next) => {
     } catch (error) {
         next(error);
     }
-<<<<<<< Updated upstream
-    await association_users_utils.addRefereeToSeason(user_id,req.body.league_id,req.body.season_id)
+    await association_users_utils.addRefereeToSeason(user_id, req.body.league_id, req.body.season_id)
     res.status(201).send(`referee was appointments to chosen season`);
-  }
-  catch(error){
-    next(error);
-  }
-=======
->>>>>>> Stashed changes
 });
 
 router.post("/appointmentRefereeToMatch", async(req, res, next) => {
@@ -197,16 +165,9 @@ router.post("/appointmentRefereeToMatch", async(req, res, next) => {
     } catch (error) {
         next(error);
     }
-<<<<<<< Updated upstream
-    
-    await association_users_utils.appointmentRefeereToMatch(user_id,match_id);
-    res.status(202).send('referee was added successfully to chosen match') ;
-  }
-  catch(error){
-    next(error);
-  }
-=======
->>>>>>> Stashed changes
-})
+
+    await association_users_utils.appointmentRefeereToMatch(user_id, match_id);
+    res.status(202).send('referee was added successfully to chosen match');
+});
 
 module.exports = router;
