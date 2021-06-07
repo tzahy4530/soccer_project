@@ -11,16 +11,16 @@ const DButils = require("./DButils");
 app.use(logger("dev")); //logger
 app.use(express.json()); // parse application/json
 app.use(
-  session({
-    cookieName: "session", // the cookie key name
-    secret: process.env.COOKIE_SECRET, // the encryption key
-    duration: 24 * 60 * 60 * 1000, // expired after 20 sec
-    activeDuration: 1000 * 60 * 5, // if expiresIn < activeDuration,
-    cookie: {
-      httpOnly: false,
-    },
-    //the session will be extended by activeDuration milliseconds
-  })
+    session({
+        cookieName: "session", // the cookie key name
+        secret: process.env.COOKIE_SECRET, // the encryption key
+        duration: 24 * 60 * 60 * 1000, // expired after 20 sec
+        activeDuration: 1000 * 60 * 5, // if expiresIn < activeDuration,
+        cookie: {
+            httpOnly: false,
+        },
+        //the session will be extended by activeDuration milliseconds
+    })
 );
 app.use(express.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
 app.use(express.static(path.join(__dirname, "public"))); //To serve static files such as images, CSS files, and JavaScript files
@@ -30,12 +30,12 @@ app.use(express.static(path.join(__dirname, "public"))); //To serve static files
 app.use(express.static("dist"));
 
 app.get("/api", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
+    res.sendFile(__dirname + "/index.html");
 });
 
 const corsConfig = {
-  origin: true,
-  credentials: true,
+    origin: true,
+    credentials: true,
 };
 
 app.use(cors(corsConfig));
@@ -52,19 +52,19 @@ const ass_users = require("../association_users");
 //#endregion
 
 //#region cookie middleware
-app.use(function (req, res, next) {
-  if (req.session && req.session.user_id) {
-    DButils.execQuery("SELECT userId FROM users")
-      .then((users) => {
-        if (users.find((x) => x.user_id === req.session.user_id)) {
-          req.user_id = req.session.user_id;
-        }
+app.use(function(req, res, next) {
+    if (req.session && req.session.user_id) {
+        DButils.execQuery("SELECT userId FROM users")
+            .then((users) => {
+                if (users.find((x) => x.user_id === req.session.user_id)) {
+                    req.user_id = req.session.user_id;
+                }
+                next();
+            })
+            .catch((error) => next());
+    } else {
         next();
-      })
-      .catch((error) => next());
-  } else {
-    next();
-  }
+    }
 });
 //#endregion
 
@@ -75,26 +75,25 @@ app.get("/alive", (req, res) => res.send("I'm alive"));
 app.use("/users", users);
 app.use("/league", league);
 app.use("/teams", teams);
-app.use("/matches",matches);
-app.use("/players",players);
-app.use("/associationUsers",ass_users);
+app.use("/matches", matches);
+app.use("/players", players);
+app.use("/associationUsers", ass_users);
 app.use(auth);
 
 
 
-app.use(function (err, req, res, next) {
-  console.error(err);
-  res.status(err.status || 500).send(err.message);
+app.use(function(err, req, res, next) {
+    res.status(err.status || 500).send(err.message);
 });
 
 
-function openServer(){
-server = app.listen(port, () => {
-  console.log(`Server listen on port ${port}`);
-});
+function openServer() {
+    server = app.listen(port, () => {
+        console.log(`Server listen on port ${port}`);
+    });
 }
 
-function closeServer(){
+function closeServer() {
     console.log("server stop.")
     server.close()
 }
