@@ -17,7 +17,6 @@ async function addNewUser(username,firstname,lastname,password,email,link, count
     VALUES ('${username}', '${firstname}','${lastname}', '${password}', '${email}', '${link}', '${country}');
     SELECT SCOPE_IDENTITY() as id`
   );
-  console.log(process.env.fanRole);
   await DButils.execQuery(
     `INSERT INTO dbo.Roles (userId, roleId)
      VALUES ('${user_id[0].id}', '${process.env.fanRole}')`
