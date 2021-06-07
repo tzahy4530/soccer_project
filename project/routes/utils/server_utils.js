@@ -9,6 +9,7 @@ require("dotenv").config();
 const DButils = require("./DButils");
 console.log(process.env.COOKIE_SECRETS);
 console.log(process.env.secret);
+
 app.use(logger("dev")); //logger
 app.use(express.json()); // parse application/json
 app.use(
