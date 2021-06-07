@@ -50,18 +50,18 @@ beforeAll(async ()=> {
 UNIT TESTES
 */ 
 
-test('is referee role - expect to false', async()=>
+test('Unit Test - check if user is referee role WHERE user isnt referee role 9.4.0.0.1', async()=>
 {
     const userId=user_id_testR;
     return expect(await association_users_utils.isReferee(userId)).toBeFalsy();
 })
 
-test('is referee role - expect to true', async()=>
+test('Unit Test - check if user is referee role WHERE user is referee role 9.4.0.0.2', async()=>
 {
     const userId=user_id_referee;
     return expect(await association_users_utils.isReferee(userId)).toBeTruthy();
 }) 
-test('appointment referee to match', async() =>
+test('Unit Test - appointment referee to match 9.4.0.0.3', async() =>
 {
     // const leagueId=271;
     // const seasonId=17328;
@@ -73,7 +73,7 @@ test('appointment referee to match', async() =>
 
 })
 
-test('checking referee is appointment to season - expect to get false', async()=>
+test('Unit Test - checking referee is appointment to season WHERE he is not 9.4.0.0.4', async()=>
 {
     const leagueId=271;
     const seasonId=17328;
@@ -81,7 +81,7 @@ test('checking referee is appointment to season - expect to get false', async()=
     return expect(await association_users_utils.isRefereeInSeason(userId,leagueId,seasonId)).toBeFalsy();
 })
 
-test('checking referee is appointment to season - expect to get true', async()=>
+test('Unit Test - checking referee is appointment to season WHERE referee is appointment to season 9.4.0.0.5', async()=>
 {
     const leagueId=271;
     const seasonId=17328;
@@ -89,7 +89,7 @@ test('checking referee is appointment to season - expect to get true', async()=>
     return expect(await association_users_utils.isRefereeInSeason(userId,leagueId,seasonId)).toBeTruthy();
 })
 
-test('checking valid date for referee appointment - expect to get false', async()=>
+test('Unit Test - checking valid date for referee appointment WHERE it is not 9.4.0.0.6', async()=>
 {
     const matchId=last_match_added_matchId;
     const userId=user_id_referee;
@@ -97,7 +97,7 @@ test('checking valid date for referee appointment - expect to get false', async(
     return expect(await association_users_utils.checkValidDateForRefereeAppointment(userId,matchId)).toBeFalsy();
 })
 
-test('checking valid date for referee appointment - expect to get true', async()=>
+test('Unit Test - checking valid date for referee appointment WHERE is valid 9.4.0.0.7', async()=>
 {
     const matchId=last_match_added_matchId;
     const userId=user_id_referee;
@@ -105,9 +105,9 @@ test('checking valid date for referee appointment - expect to get true', async()
     return expect(await association_users_utils.checkValidDateForRefereeAppointment(userId,matchId)).toBeTruthy();
 })
 
-/* INTEGRATION TESTES */
+/* INTEGRATION TESTS */
 
-test ('appointment referee to season', async()=>
+test ('Integration Test - appointment referee to season 9.4.0.1', async()=>
 {
     const leagueId=271;
     const seasonId=17328;
@@ -119,7 +119,7 @@ test ('appointment referee to season', async()=>
     return expect(await association_users_utils.isRefereeInSeason(userId,leagueId,seasonId)).toBeTruthy();
 })
 
-test ('appointment referee and match', async()=>
+test ('Integration Test - appointment referee to match WHERE all the conditions is valid 9.4.0.2', async()=>
 {
 
     const leagueId=271;
@@ -142,7 +142,7 @@ test ('appointment referee and match', async()=>
     return expect(referee_appointment_check[0]['referee_id']).toBe(userId);
 })
 
-test ('appointment referee and match - should return false - isnt valid date', async()=>
+test ('Integration Test - appointment referee and match WHERE isnt valid date 9.4.0.3', async()=>
 {
 
     const leagueId=271;
@@ -166,7 +166,7 @@ test ('appointment referee and match - should return false - isnt valid date', a
     return expect(referee_appointment_check[0]['referee_id']).toBeNull();
 })
 
-test ('appointment referee and match - should return false - isnt referee in season', async()=>
+test ('Integration Test - appointment referee and match WHERE user isnt define referee in season 9.4.0.4', async()=>
 {
     const leagueId=271;
     const seasonId=17328;
@@ -194,7 +194,7 @@ test ('appointment referee and match - should return false - isnt referee in sea
 
 /* ACCEPTANCE TESTES */
 
-test('9.4.1.1', async()=>
+test('Acceptance Test - assosiation user appointment user to referee in choosen season WHERE user still dont define as referee to choosen season. 9.4.1.1', async()=>
 {
     const leagueId=271;
     const seasonId=17328;
@@ -240,7 +240,7 @@ test('9.4.1.1', async()=>
     }
 })
 
-test('9.4.1.2', async()=>
+test('Acceptance Test - assosiation user appointment user to referee in choosen season WHERE user already define as referee to choosen season. 9.4.1.2', async()=>
 {
     const userId=user_id_for_acceptance;
     let appointmentRefereeToSeason_again={};
@@ -304,7 +304,7 @@ test('9.4.1.2', async()=>
 })
 
 
-test('9.4.2.1', async()=>
+test('Acceptance Test - assosiation user appointment user to referee in choosen match WHERE all the conditions is valid. 9.4.2.1', async()=>
 {
     const matchId=last_match_added_matchId;
     const userId=user_id_for_acceptance;
@@ -346,7 +346,7 @@ test('9.4.2.1', async()=>
 })
 
 
-test('9.4.2.2 + 9.4.2.3', async()=>
+test('Acceptance Test - assosiation user appointment user to referee in choosen match WHERE user is not defined as referee to choosen league or season. 9.4.2.2 + 9.4.2.3', async()=>
 {
     const matchId=last_match_added_matchId;
     const userId=user_id_for_acceptance;
@@ -392,7 +392,7 @@ test('9.4.2.2 + 9.4.2.3', async()=>
 
 })
 
-test('9.4.2.4', async()=>
+test('Acceptance Test - assosiation user appointment user to referee in choosen match WHERE the date conditions isnt valid. 9.4.2.4', async()=>
 {
     const matchId=last_match_added_matchId;
     const userId=user_id_for_acceptance;
@@ -437,28 +437,6 @@ test('9.4.2.4', async()=>
     }
 
 })
-// test('append user to request role for referee role', async()=>
-// {
-//     const userId=user_id_refereeAppointment;
-//     await association_users_utils.sendRefereeAppointmentRequest(userId);
-//     const is_user_in_RequestRole=await DButils.execQuery(`SELECT roleId FROM dbo.RequestRole where userId=${userId}`);  
-//     return expect(is_user_in_RequestRole[0]["roleId"]).toBe(parseInt(process.env.refereeRole));
-
-// })
-
-// test('user approving for referee role', async() =>
-// {
-//     const userId=user_id_refereeAppointmentApprove;
-//     console.log(userId);
-//     await user_utils.userRefereeAppointment(userId);
-//     const removed_from_roleRequest= await DButils.execQuery(`SELECT * FROM dbo.RequestRole where userId=${userId}`);
-//     console.log(removed_from_roleRequest);
-//     const is_in_Role_table=await DButils.execQuery(`SELECT roleId FROM dbo.Roles where userId=${userId} `)
-//     test_obejct=[removed_from_roleRequest.length ,is_in_Role_table.find(x=>x.roleId==process.env.refereeRole).roleId];
-//     console.log(test_obejct);
-//     const expected=[1,6];
-//     return expect(test_obejct).toEqual(expect.arrayContaining([0,parseInt(process.env.refereeRole)]));
-// })
 
 
 
