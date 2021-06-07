@@ -3,7 +3,7 @@ const server_utils = require('../project/routes/utils/server_utils')
 jest.setTimeout(100000)
 
 async function clearDB(){
-    await DButils.execQuery(process.env.removeAllTables)
+    await DButils.execQuery(`DELETE FROM events;DELETE FROM favoritematches;DELETE FROM favoriteplayers;DELETE FROM matches;DELETE FROM RefereeAppointments;DELETE FROM RequestRole;DELETE FROM Roles;DELETE FROM Users;`)
 }
 
 global.beforeAll(async () => {
