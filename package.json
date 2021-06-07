@@ -21,6 +21,8 @@
     "gem": "^2.4.3",
     "morgan": "^1.10.0",
     "mssql": "^7.1.0",
+    "ruby": "^0.6.1",
+    "rubygems": "^1.0.3",
     "travis": "^0.1.1"
   },
   "devDependencies": {
