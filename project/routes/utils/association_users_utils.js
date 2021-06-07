@@ -85,8 +85,8 @@ async function addRefereeToSeason(userId,leagueId,seasonId) {
   try{
       await DButils.execQuery(`INSERT INTO dbo.RefereeAppointments (userId,leagueId,seasonId) VALUES (${userId},${leagueId},${seasonId})`);
   }
-  catch(error){
-    throw error;
+  catch{
+    throw {status:404, message:"unable to append referee to selected season"};
   }
 }
 async function getDateByMatchId(match_id) {
@@ -104,7 +104,13 @@ async function checkValidDateForRefereeAppointment(user_id,match_id) {
 }
 
 async function appointmentRefeereToMatch(user_id,match_id) {
-  await DButils.execQuery(`UPDATE dbo.Matches SET referee_id=${user_id} where match_id=${match_id}`)
+  try{
+    await DButils.execQuery(`UPDATE dbo.Matches SET referee_id=${user_id} where match_id=${match_id}`)
+  }
+  catch(error){
+    console.log('--------------------------------------------------------------------')
+    throw {status:404, message:"unable to append referee to selected match"};
+  }
 }
 exports.sendRefereeAppointmentRequest = sendRefereeAppointmentRequest;
 exports.appointmentableToReferee = appointmentableToReferee;
