@@ -136,13 +136,11 @@ router.post("/AppointmentRefereeToSeason", async(req, res, next) => {
         if (!is_referee) {
             throw { status: 404, message: 'userId is not define as referee' };
         }
-        association_users_utils.addRefereeToSeason(user_id, req.body.league_id, req.body.season_id)
-            .then(res.status(201).send(`referee was appointments to chosen season`));
+        await association_users_utils.addRefereeToSeason(user_id, req.body.league_id, req.body.season_id)
+        res.status(201).send(`referee was appointments to chosen season`);
     } catch (error) {
         next(error);
     }
-    await association_users_utils.addRefereeToSeason(user_id, req.body.league_id, req.body.season_id)
-    res.status(201).send(`referee was appointments to chosen season`);
 });
 
 router.post("/appointmentRefereeToMatch", async(req, res, next) => {
@@ -160,14 +158,11 @@ router.post("/appointmentRefereeToMatch", async(req, res, next) => {
         if (!checkValidDateForRefereeAppointment) {
             throw { status: 404, message: 'referee is appointment to other game in this date' };
         }
-        association_users_utils.appointmentRefeereToMatch(user_id, match_id)
-            .then(res.status(202).send('referee was added successfully to chosen match'));
+        await association_users_utils.appointmentRefeereToMatch(user_id, match_id);
+        res.status(202).send('referee was added successfully to chosen match');
     } catch (error) {
         next(error);
     }
-
-    await association_users_utils.appointmentRefeereToMatch(user_id, match_id);
-    res.status(202).send('referee was added successfully to chosen match');
 });
 
 module.exports = router;
