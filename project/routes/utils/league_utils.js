@@ -16,9 +16,9 @@ async function getClosetMatch() {
 
 }
 
-async function getLeagueDetails() {
+async function getLeagueDetails(league_id) {
   const league = await axios.get(
-    `${api_domain}/leagues/${LEAGUE_ID}`,
+    `${api_domain}/leagues/${league_id}`,
     {
       params: {
         include: "season",
@@ -39,6 +39,7 @@ async function getLeagueDetails() {
     league_name: league.data.data.name,
     current_season_name: league.data.data.season.data.name,
     current_stage_name: stage.data.data.name,
+    current_stage_id: stage.data.data.id,
     next_game_details: next_game.length==1 ? next_game[0] : null
     // next game details should come from DB
   };
@@ -134,9 +135,57 @@ async function getStagesBySeason(seasonID){
     }
   });
 }
+
+ async function getAllTeamsInLeague(seasson_id) {
+  const all_fixtures = await getAllFixtures(seasson_id)
+  const all_teams_in_league = getAllTeamsFromFixtures(all_fixtures)
+  return all_teams_in_league;
+}
+
+async function getAllFixtures(seasson_id) {
+  const all_fixtures = (await axios.get(
+      `${api_domain}/seasons/${seasson_id}`, {
+          params: {
+              include: "SEASON_ID",
+              include: "fixtures",
+              api_token: process.env.api_token,
+          }
+      }
+  )).data.data.fixtures.data
+  return all_fixtures;
+}
+
+async function getAllTeamsFromFixtures(all_fixtures) {
+  all_teams = []
+  all_fixtures.map((fixture) => {
+      if (!(all_teams.includes(fixture.localteam_id)))
+          all_teams.push(fixture.localteam_id)
+      if (!(all_teams.includes(fixture.visitorteam_id)))
+          all_teams.push(fixture.visitorteam_id)
+  })
+  return all_teams
+}
  
+async function getAllStadiums(all_teams) {
+  all_stadiums = {}
+  for (let i = 0; i < all_teams.length; i++) {
+      const stadium = (await axios.get(
+          `${api_domain}/teams/${all_teams[i]}`, {
+              params: {
+                  include: "TEAM_NAME",
+                  include: "venue",
+                  api_token: process.env.api_token,
+              },
+          }
+      )).data.data.venue.data.name;
+      all_stadiums[all_teams[i]] = stadium;
+  }
+  return all_stadiums;
+}
 
-
+exports.getStagesBySeason = getStagesBySeason;
+exports.getAllStadiums = getAllStadiums;
+exports.getAllTeamsInLeague = getAllTeamsInLeague;
 exports.getLeagueDetails = getLeagueDetails;
 exports.getLeagueCurrentSeassonId = getLeagueCurrentSeassonId;
 exports.getAllLeagues = getAllLeagues;

@@ -4,6 +4,7 @@ const association_users_utils = require("./utils/association_users_utils");
 const users_utils = require("./utils/users_utils");
 const matches_utils = require("./utils/matches_utils");
 const auth_utils = require("./utils/auth_utils");
+const league_utils = require("./utils/league_utils")
 
 router.use(async function(req, res, next) {
     try {
@@ -164,5 +165,44 @@ router.post("/appointmentRefereeToMatch", async(req, res, next) => {
         next(error);
     }
 });
+
+router.post("/gameSchedulingPolicy", async(req, res, next) => {
+    try {
+        const league_id = req.body.league_id
+        const seasson_id = req.body.seasson_id
+        let all_teams = await league_utils.getAllTeamsInLeague(seasson_id);
+        let all_stadiums = await league_utils.getAllStadiums(all_teams);
+        const all_pairs = []
+        for (let i = 0; i < all_teams.length - 1; i++) {
+            for (let j = i + 1; j < all_teams.length; j++) {
+                all_pairs.push([all_teams[i], all_teams[j]])
+                all_pairs.push([all_teams[j], all_teams[i]])
+            }
+        }
+        let date = new Date(Date.now())
+        let stage
+        for (let i = 0; i < all_pairs.length; i++) {
+            // console.log(all_pairs[i]);
+            const stadium = all_stadiums[all_pairs[i][0]];
+            try{
+                stage = (await league_utils.getLeagueDetails(league_id)).current_stage_id
+            } catch(e){
+                stage = 1
+            }
+
+            date = new Date(date + ( 3600 * 1000 * 24));
+            let y = date.getFullYear(),
+                m = date.getMonth() + 1, // january is month 0 in javascript
+                d = date.getDate();
+            let date_string = String(d)+'/'+String(m)+'/'+String(y)
+            association_users_utils.addNewMatch(date_string,"12:00",all_pairs[i][0],all_pairs[i][1],league_id,seasson_id,stage,stadium)
+        }
+        res.status(202).send('All games was added successfully');
+    } catch (error) {
+        next(error);
+    }
+});
+
+
 
 module.exports = router;
