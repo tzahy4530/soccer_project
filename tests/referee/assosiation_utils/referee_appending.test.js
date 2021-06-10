@@ -201,6 +201,7 @@ test('Acceptance Test - assosiation user appointment user to referee in choosen 
 {
     const leagueId=271;
     const seasonId=17328;
+    const userId=user_id_for_acceptance;
     try{
         const cookieJar = new tough.CookieJar();
         const axiosInstance  = axios.create({
@@ -237,7 +238,10 @@ test('Acceptance Test - assosiation user appointment user to referee in choosen 
 
             }
         );
-        return expect(appointmentRefereeToSeason.status).toBe(201);
+        expect(appointmentRefereeToSeason.status).toBe(201);
+        const db_check=await DButils.execQuery(`SELECT * FROM dbo.refereeAppointments WHERE userId=${userId} AND leagueId=${leagueId} AND seasonId= ${seasonId}`)
+        
+        return expect(db_check.length).toBe(1);
     }catch(e){
         throw(e)
     }
@@ -345,7 +349,11 @@ test('Acceptance Test - assosiation user appointment user to referee in choosen 
         }
     );
     console.log(appointment_referee_to_match.status);
-    return expect(appointment_referee_to_match.status).toBe(202);
+    expect(appointment_referee_to_match.status).toBe(202);
+    
+    //checking in db
+    const referee_appointment_check=await DButils.execQuery(`SELECT referee_id FROM dbo.Matches where match_id=${matchId}`);
+    return expect(referee_appointment_check[0]['referee_id']).toBe(userId);
 })
 
 
@@ -387,7 +395,10 @@ test('Acceptance Test - assosiation user appointment user to referee in choosen 
                 match_id:matchId
             }
         );
-        return expect(appointment_referee_to_match.status).toBe(404);
+        expect(appointment_referee_to_match.status).toBe(404);
+        const referee_appointment_check=await DButils.execQuery(`SELECT referee_id FROM dbo.Matches where match_id=${matchId}`);
+        return expect(referee_appointment_check[0]['referee_id']).toBeNull();
+        
     }
     catch(error){console.log(error)}
     finally{
@@ -398,6 +409,7 @@ test('Acceptance Test - assosiation user appointment user to referee in choosen 
 test('Acceptance Test - assosiation user appointment user to referee in choosen match WHERE the date conditions isnt valid. 9.4.2.4', async()=>
 {
     const matchId=last_match_added_matchId;
+    const matchId_2=last_match_added_matchId_2;
     const userId=user_id_for_acceptance;
     const leagueId=271;
     const seasonId=17328;
@@ -406,7 +418,8 @@ test('Acceptance Test - assosiation user appointment user to referee in choosen 
     await DButils.execQuery(`DELETE from dbo.Roles where userId=${userId}`);
     await DButils.execQuery(`INSERT INTO dbo.refereeAppointments VALUES (${userId},${leagueId},${seasonId})`);
     await DButils.execQuery(`INSERT INTO dbo.Roles VALUES (${userId},${process.env.refereeRole})`);
-    await DButils.execQuery(`UPDATE dbo.matches SET referee_id=${userId} WHERE match_id=${matchId}`);
+    await DButils.execQuery(`UPDATE dbo.matches SET referee_id=NULL WHERE match_id=${matchId}`);
+    await DButils.execQuery(`UPDATE dbo.matches SET referee_id=${userId} WHERE match_id=${matchId_2}`);
 
     try{
         const cookieJar = new tough.CookieJar();
@@ -433,7 +446,10 @@ test('Acceptance Test - assosiation user appointment user to referee in choosen 
                 match_id:matchId
             }
         );
-        return expect(appointment_referee_to_match.status).toBe(404);
+        expect(appointment_referee_to_match.status).toBe(404);
+
+        const referee_appointment_check=await DButils.execQuery(`SELECT referee_id FROM dbo.Matches where match_id=${matchId}`);
+        return expect(referee_appointment_check[0]['referee_id']).toBeNull();
     }
     catch(error){console.log(error)}
     finally{
