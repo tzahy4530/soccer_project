@@ -6,6 +6,9 @@ const matches_utils = require("./utils/matches_utils");
 const auth_utils = require("./utils/auth_utils");
 const league_utils = require("./utils/league_utils")
 
+/**
+ * Authenticate all incoming requests by middleware
+ */
 router.use(async function(req, res, next) {
     try {
         if (req.session && req.session.user_id) {
@@ -20,7 +23,7 @@ router.use(async function(req, res, next) {
     } catch (err) { next(err) }
 });
 
-
+/** middleware to authanticate that the user is actually association user. */
 router.use(async function(req, res, next) {
     try {
         const is_association = await auth_utils.isAssociationUser(req.user_id)
@@ -29,7 +32,7 @@ router.use(async function(req, res, next) {
 });
 
 
-
+/** update event by giving it's ID. */
 router.put("/event/:eventId", async(req, res, next) => {
     try {
         event_description = req.body.date + ',' + req.body.time +
@@ -41,6 +44,7 @@ router.put("/event/:eventId", async(req, res, next) => {
     }
 });
 
+/** create new event for a specific match */
 router.post("/event/", async(req, res, next) => {
     try {
         event_description = req.body.date + ',' + req.body.time +
@@ -52,7 +56,7 @@ router.post("/event/", async(req, res, next) => {
     }
 });
 
-
+/** update match results for a specific match */
 router.put("/results/:matchId", async(req, res, next) => {
     try {
         await association_users_utils.updateMatchResults(req.params.matchId,
@@ -63,7 +67,7 @@ router.put("/results/:matchId", async(req, res, next) => {
     }
 });
 
-
+/** add new match to DB. first validate the date, and if all clear, add it. */
 router.post("/addMatch", async(req, res, next) => {
     try {
         const validDate = await matches_utils.isValidDateForMatch(
@@ -82,6 +86,7 @@ router.post("/addMatch", async(req, res, next) => {
     }
 });
 
+/** delete event given it's ID. */
 router.delete("/event/:eventId", async(req, res, next) => {
     try {
         await association_users_utils.deleteEvent(req.params.eventId)
@@ -91,6 +96,7 @@ router.delete("/event/:eventId", async(req, res, next) => {
     }
 });
 
+/** delete match given it's ID */
 router.delete("/deleteMatch/:matchId", async(req, res, next) => {
     try {
         await association_users_utils.deleteMatch(req.params.matchId)
@@ -129,6 +135,7 @@ router.post("/AppointmentReferee", async(req, res, next) => {
     }
 });
 
+/** Appoint referee for the season. first validate given username is referee and then add it to referees DB */
 router.post("/AppointmentRefereeToSeason", async(req, res, next) => {
     try {
         const username = req.body.username;
@@ -144,6 +151,7 @@ router.post("/AppointmentRefereeToSeason", async(req, res, next) => {
     }
 });
 
+/** Appoint referee to a specfic match. */
 router.post("/appointmentRefereeToMatch", async(req, res, next) => {
     try {
         const username = req.body.username;
@@ -166,6 +174,7 @@ router.post("/appointmentRefereeToMatch", async(req, res, next) => {
     }
 });
 
+/** Set the game scheduling policy and write matches to DB accordingly  */
 router.post("/gameSchedulingPolicy", async(req, res, next) => {
     try {
         const league_id = req.body.league_id
