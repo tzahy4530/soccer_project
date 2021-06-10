@@ -310,6 +310,52 @@ test('Acceptance Test - assosiation user appointment user to referee in choosen 
 
 })
 
+test('Acceptance Test - assosiation user appointment user to referee in choosen season WHERE user is not define as referee role. 9.4.1.3', async()=>
+{
+    const userId=user_id_testR;
+    let appointmentRefereeToSeason={};
+    const leagueId=271;
+    const seasonId=17328;
+    try{
+        const cookieJar = new tough.CookieJar();
+        const axiosInstance  = axios.create({
+            jar: cookieJar,
+            withCredentials: true
+          })
+
+        const login = await axiosInstance.post(
+            `${api_domain}/login`,
+            {
+                username: "au",
+                password: "password_test"
+            }
+        );
+        expect(login.status).toBe(200);
+    
+        const appointmentRefereeToSeason=await axiosInstance.post(
+            `${api_domain}/associationUsers/AppointmentRefereeToSeason`,
+            {
+                username: "testR",
+                league_id: leagueId,
+                season_id: seasonId
+
+            }
+        );
+        expect(appointmentRefereeToSeason.status).toBe(404);
+        
+        //db checking
+        const db_check=await DButils.execQuery(`SELECT * FROM dbo.refereeAppointments WHERE userId=${userId} AND leagueId=${leagueId} AND seasonId= ${seasonId}`)
+        return expect(db_check.length).toBe(0);
+        
+    }
+    finally{
+        expect(appointmentRefereeToSeason.status).toBeUndefined();
+        const db_check=await DButils.execQuery(`SELECT * FROM dbo.refereeAppointments WHERE userId=${userId} AND leagueId=${leagueId} AND seasonId= ${seasonId}`)
+        return expect(db_check.length).toBe(0);
+    }
+
+})
+
 
 test('Acceptance Test - assosiation user appointment user to referee in choosen match WHERE all the conditions is valid. 9.4.2.1', async()=>
 {
