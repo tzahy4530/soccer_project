@@ -1,7 +1,8 @@
 const DButils = require("./DButils");
 
 async function getMatchInfo(match_id){
-  
+
+  /** getting match details from DB */
   const match_details = await DButils.execQuery(
     `SELECT * FROM matches WHERE (match_id = '${match_id}')`
     )
@@ -46,6 +47,7 @@ async function getMatchInfo(match_id){
   return match_rel_details
 }
 
+/** getting all matches id which belong to choosen stage */
 async function getStageMatches(stage_id) {
   const matches_ids = await DButils.execQuery(
     `select match_id from dbo.Matches where stage_id='${stage_id}'`
@@ -53,6 +55,7 @@ async function getStageMatches(stage_id) {
   return matches_ids;
 }
 
+/** getting all matches id which belong to choosen seasson */
 async function getSeasonMatches(season_id) {
   const matches_ids = await DButils.execQuery(
     `select match_id from dbo.Matches where season_id='${season_id}'`
@@ -60,6 +63,7 @@ async function getSeasonMatches(season_id) {
   return matches_ids;
 }
 
+/** getting all matches id which belong to choosen league */
 async function getLeagueMatches(league_id) {
   const matches_ids = await DButils.execQuery(
     `select match_id from dbo.Matches where league_id='${league_id}'`
@@ -67,12 +71,14 @@ async function getLeagueMatches(league_id) {
   return matches_ids;
 }
 
+/** getting all data of choosen matches id array */
 async function getMatchesInfo(matches_ids_array){
   return await Promise.all(matches_ids_array.map((match_id) => {
     return getMatchInfo(match_id)
   }))
 }
 
+/** checking if home & away team and stadium are clear to play in the date */
 async function isValidDateForMatch(home_team, away_team, date, stadium){
   const teams_matches = await DButils.execQuery(
     `select * from dbo.Matches WHERE (date='${date}'
