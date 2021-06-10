@@ -3,6 +3,7 @@ const DButils = require("./DButils");
 const api_domain = process.env.api_domain;
 const LEAGUE_ID = process.env.league_id;
 
+/** getting closet match of Choosen League ID */
 async function getClosetMatch() {
   try{
     const closet_match= await DButils.execQuery(
@@ -15,7 +16,7 @@ async function getClosetMatch() {
     }
 
 }
-
+/** get relevance deatils from league by league_id */
 async function getLeagueDetails(league_id) {
   const league = await axios.get(
     `${api_domain}/leagues/${league_id}`,
@@ -45,6 +46,7 @@ async function getLeagueDetails(league_id) {
   };
 }
 
+/** get all Leagues in external API */
 async function getAllLeagues(){
   const all_league= await axios.get(`${api_domain}/leagues`,{
       params: {
@@ -60,6 +62,7 @@ async function getAllLeagues(){
   });
 }
 
+/** getting current seasson of League ID */
 async function getLeagueCurrentSeassonId(){
   const league = await axios.get(
     `${api_domain}/leagues/${LEAGUE_ID}`,
@@ -78,6 +81,7 @@ async function getLeagueCurrentSeassonId(){
   }
 }
 
+/** getting league deatils by league id */
 async function getLeagueById(id){
   const league_by_id=await axios.get(`${api_domain}/leagues/${id}`,
   {
@@ -101,6 +105,7 @@ async function getLeagueById(id){
   }
 }
 
+/** getting seasson details which belong to specific league */
 async function getSeasonByLeagueID(leagueID,seasonID){
   const league_info=await axios.get(`${api_domain}/leagues/${leagueID}`,
   {
@@ -119,6 +124,7 @@ async function getSeasonByLeagueID(leagueID,seasonID){
   }
 }
 
+/** getting stage details by seasson id */
 async function getStagesBySeason(seasonID){
   const seasonInfo=await axios.get(`${api_domain}/seasons/${seasonID}`,
   {
@@ -136,12 +142,14 @@ async function getStagesBySeason(seasonID){
   });
 }
 
- async function getAllTeamsInLeague(seasson_id) {
+/** get all teams ids who belong to specific seasson in league */
+async function getAllTeamsInLeague(seasson_id) {
   const all_fixtures = await getAllFixtures(seasson_id)
   const all_teams_in_league = getAllTeamsFromFixtures(all_fixtures)
   return all_teams_in_league;
 }
 
+/** getting all matches from External API */
 async function getAllFixtures(seasson_id) {
   const all_fixtures = (await axios.get(
       `${api_domain}/seasons/${seasson_id}`, {
@@ -155,6 +163,7 @@ async function getAllFixtures(seasson_id) {
   return all_fixtures;
 }
 
+/** getting all Teams ids from all matches of External API */
 async function getAllTeamsFromFixtures(all_fixtures) {
   all_teams = []
   all_fixtures.map((fixture) => {
@@ -165,7 +174,8 @@ async function getAllTeamsFromFixtures(all_fixtures) {
   })
   return all_teams
 }
- 
+
+/** getting all stadiums who belong to the teams */
 async function getAllStadiums(all_teams) {
   all_stadiums = {}
   for (let i = 0; i < all_teams.length; i++) {
