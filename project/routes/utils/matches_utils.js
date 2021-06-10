@@ -85,7 +85,7 @@ async function isValidDateForMatch(home_team, away_team, date, stadium) {
      AND (host_team = '${home_team}' OR host_team = '${away_team}' OR away_team = '${home_team}'
       OR away_team = '${away_team}' ))`
     );
-    if (teams_matches.length > 0) {
+    if (teams_matches.length >= 0) {
         return false
     }
     const stadium_matches = await DButils.execQuery(
