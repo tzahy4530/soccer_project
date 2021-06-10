@@ -88,7 +88,7 @@ test('Acceptance Test - association user post new invalid match, home team plays
     }
 });
 
-test('Acceptance Test - association user post new invalid match, away team plays that date. 9.7.2.2', async() => {
+test('Acceptance Test - association user post new invalid match, away team plays that date. 9.7.2.3', async() => {
     try {
         const cookieJar = new tough.CookieJar();
         const axiosInstance = axios.create({
