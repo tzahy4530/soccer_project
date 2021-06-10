@@ -104,8 +104,7 @@ async function addRefereeToSeason(userId, leagueId, seasonId) {
 
 /** return date of match by match_id  */
 async function getDateByMatchId(match_id) {
-    const match_details = await DBut
-    ils.execQuery(`SELECT date FROM dbo.Matches where match_id=${match_id}`);
+    const match_details = await DButils.execQuery(`SELECT date FROM dbo.Matches where match_id=${match_id}`);
     if (match_details.length != 1) {
         throw { status: 404, message: 'match isnt find' };
     }
