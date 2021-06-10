@@ -5,6 +5,7 @@ const players_utils = require("./utils/players_utils");
 const teams_utils = require("./utils/teams_utils");
 const coaches_utils = require("./utils/coaches_utils");
 
+/** getting team deatils by team ID */
 router.get("/teamFullDetails/:teamId", async (req, res, next) => {
 
   try {
@@ -26,6 +27,7 @@ router.get("/teamFullDetails/:teamId", async (req, res, next) => {
   }
 });
 
+/** getting team deatails by searching the team name */
 router.get("/teamFullDetails/search/:teamName", async (req, res, next) => {
   try {
     const team_details = await teams_utils.getTeamInfoByName(
@@ -38,6 +40,7 @@ router.get("/teamFullDetails/search/:teamName", async (req, res, next) => {
   }
 });
 
+/** getting all teams ids and names of the current seasson */
 router.get("/teamFullDetails/", async (req, res, next) => {
   try {
     const seasson_details = await league_utils.getLeagueCurrentSeassonId();
