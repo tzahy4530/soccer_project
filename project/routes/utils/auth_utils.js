@@ -1,6 +1,11 @@
 const DButils = require("./DButils");
 const bcrypt = require("bcryptjs");
 
+/**
+ * The function check if username is available to use return true if not used.
+ * @param {string} username 
+ * @returns 
+ */
 async function validUsername(username){
   const users = await DButils.execQuery(
     "SELECT username FROM dbo.users"
@@ -11,6 +16,16 @@ async function validUsername(username){
   return true
 }
 
+/**
+ * The function add new User to the system
+ * @param {string} username 
+ * @param {string} firstname 
+ * @param {string} lastname 
+ * @param {string} password 
+ * @param {string} email 
+ * @param {string} link 
+ * @param {string} country 
+ */
 async function addNewUser(username,firstname,lastname,password,email,link, country){
   const user_id = await DButils.execQuery(
     `INSERT INTO dbo.users (username, firstname, lastname, password, email, link, country)
@@ -23,6 +38,12 @@ async function addNewUser(username,firstname,lastname,password,email,link, count
   )
 }
 
+/**
+ * The function checkes that the username exist and the password are matched.
+ * @param {string} username 
+ * @param {string} password 
+ * @returns 
+ */
 async function validLoginDetails(username, password){
   const user = (
     await DButils.execQuery(
@@ -37,6 +58,11 @@ async function validLoginDetails(username, password){
   return true
 }
 
+/**
+ * The function return username's ID.
+ * @param {string} username 
+ * @returns 
+ */
 async function getUserIdByUsername(username){
   const user = (
     await DButils.execQuery(
@@ -46,6 +72,11 @@ async function getUserIdByUsername(username){
   return user.userId
 }
 
+/**
+ * The function encryp the password and returns it
+ * @param {string} password 
+ * @returns 
+ */
 function hashPassword(password){
   return bcrypt.hashSync(
     password,
@@ -53,6 +84,11 @@ function hashPassword(password){
   );
 }
 
+/**
+ * The function check that user_id exist.
+ * @param {number} user_id 
+ * @returns 
+ */
 async function isValidSession(user_id){
     const users = await DButils.execQuery(`SELECT userId FROM dbo.users WHERE userId = '${user_id}'`)
     if (users.find((user) => user.userId === user_id)) {
@@ -61,6 +97,11 @@ async function isValidSession(user_id){
     return false
 }
 
+/**
+ * The function checks if user_id role is associationUserRole
+ * @param {number} user_id 
+ * @returns 
+ */
 async function isAssociationUser(user_id){
   const user_roles = await DButils.execQuery(`SELECT roleId FROM dbo.Roles WHERE userId = '${user_id}'`)
   if (user_roles.find((role) => role.roleId == process.env.associationUserRole)) {

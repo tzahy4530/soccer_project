@@ -1,6 +1,6 @@
 const axios = require("axios");
 const api_domain = process.env.api_domain;
-
+/** this function get list of teams id and return list of team info for each team */
 async function getTeamsInfoById(teams_ids_list){
     let promises = [];
     teams_ids_list.map((id) =>
@@ -15,7 +15,7 @@ async function getTeamsInfoById(teams_ids_list){
     let teams_info = await Promise.all(promises);
     return extractRelevantTeamsData(teams_info);
   }
-
+/** this function get single team id and return team info */
 async function getTeamInfoById(team_id){
   const team_info = await axios.get(`${api_domain}/teams/${team_id}`, {
     params: {
@@ -24,7 +24,7 @@ async function getTeamInfoById(team_id){
   })
   return extractRelevantTeamData(team_info.data.data)
 }
-
+/** this function get name and return list of team info fro each team that match to given name  */
 async function getTeamInfoByName(team_name){
   const team_info = await axios.get(`${api_domain}/teams/search/${team_name}`, {
     params: {
@@ -33,7 +33,7 @@ async function getTeamInfoByName(team_name){
   })
   return extractRelevantTeamsData(team_info)
 }
-
+/** return info about all team that take a part in given season */
 async function getAllTeamsInfoBySeassonId(seasson_id){
   const all_teams = await axios.get(`${api_domain}/teams/season/${seasson_id}`, {
     params: {
@@ -44,7 +44,7 @@ return extractRelevantTeamsData(all_teams);
 
 }
 
-
+/** this function get team info object from api and extract : id, name, logo path and short code .only for internal usage */
 function extractRelevantTeamData(team_info) {
     //const { fullname, image_path, position_id } = player_info.data.data;
     const {name, id, logo_path, short_code}=team_info;
@@ -56,7 +56,7 @@ function extractRelevantTeamData(team_info) {
     };
 }
 
-
+/** this function get an object of teams info and return team info for each team the object contain .only for internal usage */
 function extractRelevantTeamsData(teams_info) {
   try{
     return teams_info.map((team_info) => {
