@@ -3,7 +3,9 @@ var router = express.Router();
 const matches_utils = require("./utils/matches_utils");
 
 
-
+/**
+ * Get match details by match ID.
+ */
 router.get("/:matchId", async (req, res, next) => {
   try {
     const match_rel_details = await matches_utils.getMatchInfo(
@@ -14,6 +16,9 @@ router.get("/:matchId", async (req, res, next) => {
   }
 });
 
+/**
+ * Get all matches details by stage ID.
+ */
 router.get("/stage/:stageId", async (req, res, next) => {
   try {
     const matches_ids = await matches_utils.getStageMatches(req.params.stageId)
@@ -26,6 +31,9 @@ router.get("/stage/:stageId", async (req, res, next) => {
   }
 });
 
+/**
+ * Get all matches details by season ID.
+ */
 router.get("/season/:seasonId/", async (req, res, next) => {
   try {
     const matches_ids = await matches_utils.getSeasonMatches(req.params.seasonId)
@@ -38,6 +46,9 @@ router.get("/season/:seasonId/", async (req, res, next) => {
   }
 });
 
+/**
+ * Get all matches details by league ID.
+ */
 router.get("/league/:leagueId/", async (req, res, next) => {
   try {
     const matches_ids = await matches_utils.getLeagueMatches(req.params.leagueId)

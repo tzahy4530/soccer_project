@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 const auth_utils = require("./utils/auth_utils");
 
-
+/** register new user to the system. */
 router.post("/Register", async(req, res, next) => {
     try {
         // parameters exists
@@ -32,6 +32,7 @@ router.post("/Register", async(req, res, next) => {
     }
 });
 
+/** cheking valid login details, and making authentication by cookies. */
 router.post("/Login", async(req, res, next) => {
     try {
         valid_details = await auth_utils.validLoginDetails(req.body.username, req.body.password)
@@ -49,7 +50,8 @@ router.post("/Login", async(req, res, next) => {
         next(error);
     }
 });
-
+ 
+/** delete user authentication cookies. */
 router.post("/Logout", function(req, res) {
     req.session.reset(); // reset the session info --> send cookie when  req.session == undefined!!
     res.send("logout succeeded");
