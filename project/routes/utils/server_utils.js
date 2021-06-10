@@ -86,13 +86,14 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500).send(err.message);
 });
 
-
+/** open listening in the choosen port */
 function openServer() {
     server = app.listen(port, () => {
         console.log(`Server listen on port ${port}`);
     });
 }
 
+/** close listening in the choosen port */
 function closeServer() {
     console.log("server stop.")
     server.close()
