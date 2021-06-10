@@ -182,20 +182,15 @@ router.post("/gameSchedulingPolicy", async(req, res, next) => {
         let date = new Date(Date.now())
         let stage
         for (let i = 0; i < all_pairs.length; i++) {
-            // console.log(all_pairs[i]);
             const stadium = all_stadiums[all_pairs[i][0]];
-            try{
+            try {
                 stage = (await league_utils.getLeagueDetails(league_id)).current_stage_id
-            } catch(e){
+            } catch (e) {
                 stage = 1
             }
-
-            date = new Date(date + ( 3600 * 1000 * 24));
-            let y = date.getFullYear(),
-                m = date.getMonth() + 1, // january is month 0 in javascript
-                d = date.getDate();
-            let date_string = String(d)+'/'+String(m)+'/'+String(y)
-            association_users_utils.addNewMatch(date_string,"12:00",all_pairs[i][0],all_pairs[i][1],league_id,seasson_id,stage,stadium)
+            date.setDate(date.getDate() + 1);
+            date_string = matches_utils.fixDate(date);
+            association_users_utils.addNewMatch(date_string, "12:00", all_pairs[i][0], all_pairs[i][1], league_id, seasson_id, stage, stadium)
         }
         res.status(202).send('All games was added successfully');
     } catch (error) {
